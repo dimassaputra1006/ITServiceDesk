@@ -1,0 +1,63 @@
+name: Auto Merge Model & View ke Controller
+
+on:
+  push:
+    branches: [RefactorModels, view]
+
+jobs:
+  merge-and-test:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+      - name: Checkout semua branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup OpenJDK 25 LTS (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'   # ← OpenJDK 25 LTS gratis
+      
+      - name: Pindah ke branch controllers
+        run: |
+          git checkout controllers || git checkout -b controllers
+      
+      - name: Merge dari ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          
+          git fetch origin ${{ github.ref_name }}
+          git merge origin/${{ github.ref_name }} \
+            --no-ff \
+            -m "merge: ${{ github.ref_name }} -> controllers [skip ci]"
+      
+      - name: Cek conflict dengan compile
+        id: test
+        run: |
+          mvn clean compile
+        continue-on-error: true
+      
+      - name: Push ke controllers (kalo sukses)
+        if: steps.test.outcome == 'success'
+        run: |
+          git push origin controllers
+          echo "✅ Berhasil merge ${{ github.ref_name }} ke controllers di ${{ matrix.os }}"
+      
+      - name: Kasih warning conflict
+        if: steps.test.outcome == 'failure'
+        run: |
+          echo "❌ CONFLICT DETEKSI! ${{ github.ref_name }} vs controllers"
+          echo ""
+          echo "Cara fix manual:"
+          echo "1. git checkout controllers"
+          echo "2. git merge origin/${{ github.ref_name }}"
+          echo "3. Fix conflict, lalu git commit"
+          echo "4. git push origin controllers"
+          exit 1
