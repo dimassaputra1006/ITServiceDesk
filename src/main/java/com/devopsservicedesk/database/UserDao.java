@@ -1,4 +1,4 @@
-package com.example.devopsservicedesk.database;
+package com.devopsservicedesk.database;
 
 import com.example.devopsservicedesk.models.User;
 
