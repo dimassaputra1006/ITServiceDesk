@@ -1,4 +1,4 @@
-# 🛠️ Dev Ops Service Desk Simulator
+# 🛠️ Dev Ops Service Desk
 Tugas kelompok mata kuliah Pemrograman Berorientasi Objek.
 
 ## 🛠️ Cara Menjalankan
