@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConfig {
-    private static final String URL = "jdbc:sqlite:servicedesk.db";
+    private static final String URL = "jdbc:sqlite:src/main/resources/database/devOpsServiceDesk.db";
 
     public static Connection getConnection(){
         Connection conn = null;
@@ -58,6 +58,5 @@ public class DatabaseConfig {
         createTablesTicket();
         createTablesUser();
         getConnection();
-
     }
 }
