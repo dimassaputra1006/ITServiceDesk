@@ -1,11 +1,8 @@
-package com.example.devopsservicedesk.database;
+package com.devopsservicedesk.database;
 
-import com.example.devopsservicedesk.models.Ticket;
-import com.example.devopsservicedesk.models.User;
+import com.devopsservicedesk.models.Ticket;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TicketDao{
     public void insertTicket(Ticket ticketBaru){

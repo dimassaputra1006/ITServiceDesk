@@ -1,4 +1,4 @@
-package com.example.devopsservicedesk.models;
+package com.devopsservicedesk.models;
 
 public class User {
     private int idEmployee;
