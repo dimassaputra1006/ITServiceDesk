@@ -11,7 +11,6 @@ permissions:
   contents: write
 
 jobs:
-
   # JOB : Merge dari branch resources ke controllers
   merge-resources:
     name: Merge resources → controllers
@@ -46,7 +45,7 @@ jobs:
           git checkout controllers || git checkout -b controllers
           git pull origin controllers
           git merge origin/resources \
-            --no-ff \
+            --no-commit \
             -m "merge: resources → controllers [skip ci]"
 
       - name: Compile Check (Maven)
