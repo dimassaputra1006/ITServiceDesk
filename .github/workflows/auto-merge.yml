@@ -50,7 +50,7 @@ jobs:
           
           # Lakukan merge
           git merge origin/RefactorModels \
-            --no-ff \
+            --no-commit \
             -m "merge: RefactorModels → controllers [skip ci]"
       
       - name: Compile Check (Maven)
