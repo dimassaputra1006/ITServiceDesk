@@ -1,4 +1,4 @@
-package com.devopsservicedesk.database;
+package com.itservicedesk.config;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,8 +19,8 @@ public class DatabaseConfig {
         return conn;
     }
 
-    public static void createTablesTicket(){
-        String sqlticket = "create table if not exists tickets (\n" +
+    public static void createTablesTickets(){
+        String sqltickets = "create table if not exists tickets (\n" +
                 "    idTicket INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    judulTicket TEXT,\n" +
                 "    descProblem TEXT,\n" +
@@ -30,15 +30,15 @@ public class DatabaseConfig {
                 ");";
 
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()){
-            stmt.execute(sqlticket);
+            stmt.execute(sqltickets);
             System.out.println("Table ticket telah dibuat!!!");
         } catch (SQLException e){
             System.out.println("Gagal membuat tabel: " + e.getMessage());
         }
     }
 
-    public static void createTablesUser(){
-        String sqluser = "create table if not exists users (\n" +
+    public static void createTablesUsers(){
+        String sqlusers = "create table if not exists users (\n" +
                 "    idEmployee INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    username TEXT,\n" +
                 "    password TEXT,\n" +
@@ -47,7 +47,7 @@ public class DatabaseConfig {
                 ");";
 
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()){
-            stmt.execute(sqluser);
+            stmt.execute(sqlusers);
             System.out.println("Table user telah dibuat!!!");
         } catch (SQLException e){
             System.out.println("Gagal membuat tabel: " + e.getMessage());
@@ -55,8 +55,8 @@ public class DatabaseConfig {
     }
 
     public static void main(String[] args){
-        createTablesTicket();
-        createTablesUser();
+        createTablesTickets();
+        createTablesUsers();
         getConnection();
     }
 }
