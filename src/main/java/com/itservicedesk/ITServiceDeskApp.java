@@ -9,9 +9,9 @@ import java.io.IOException;
 public class ITServiceDeskApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ITServiceDeskApp.class.getResource("/layout_directory.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ITServiceDeskApp.class.getResource("/layout_dashboard.fxml"));
 
-        Scene scene = new Scene(fxmlLoader.load(), 1920, 1080);
+        Scene scene = new Scene(fxmlLoader.load(), 1366, 768);
         stage.setTitle("IT Service Desk - Dashboard");
         stage.setScene(scene);
         stage.show();

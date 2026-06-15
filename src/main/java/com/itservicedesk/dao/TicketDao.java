@@ -149,7 +149,28 @@ public class TicketDao {
     }
 
     private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
-        Timestamp ts = rs.getTimestamp(column);
-        return ts != null ? ts.toLocalDateTime() : null;
+        // Cara 1: Pakai String dulu (paling aman untuk SQLite)
+        String timestampStr = rs.getString(column);
+        if (timestampStr == null || timestampStr.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            // Handle format dengan nano seconds atau tanpa
+            if (timestampStr.contains(".")) {
+                // Potong nano seconds kalau terlalu panjang
+                if (timestampStr.length() > 23) {
+                    timestampStr = timestampStr.substring(0, 23);
+                }
+                return LocalDateTime.parse(timestampStr);
+            } else {
+                return LocalDateTime.parse(timestampStr);
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal parse timestamp kolom " + column + ": " + timestampStr);
+            // Fallback: coba pakai Timestamp
+            Timestamp ts = rs.getTimestamp(column);
+            return ts != null ? ts.toLocalDateTime() : null;
+        }
     }
 }
