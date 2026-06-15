@@ -8,9 +8,9 @@ public class Ticket {
     private String title;
     private String description;
     private String status;
+    private String priority;
     private String reporterId;
     private String assigneeId;
-    private String priority;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime resolvedAt;

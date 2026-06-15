@@ -38,7 +38,7 @@ public class User {
         this.lastLoginAt = null;
     }
 
-    // Constructor untuk load dari database (semua field)
+    // Constructor untuk load dari database (semua field) dipakai sama dao
     public User(String employeeId, String fullName, String username, String email, String passwordHash,
                 String role, String department, Boolean isActive, Boolean isLocked,
                 LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLoginAt) {

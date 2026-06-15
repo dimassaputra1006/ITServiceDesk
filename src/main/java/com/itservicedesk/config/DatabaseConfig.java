@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConfig {
-    private static final String URL = "jdbc:sqlite:src/main/resources/database/devOpsServiceDesk.db";
+    private static final String URL = "jdbc:sqlite:src/main/resources/database/ITServiceDesk.db";
 
     public static Connection getConnection(){
         Connection conn = null;
@@ -19,44 +19,61 @@ public class DatabaseConfig {
         return conn;
     }
 
-    public static void createTablesTickets(){
-        String sqltickets = "create table if not exists tickets (\n" +
-                "    idTicket INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    judulTicket TEXT,\n" +
-                "    descProblem TEXT,\n" +
-                "    statusTicket TEXT,\n" +
-                "    idReporter INTEGER,\n" +
-                "    idTechnician INTEGER\n" +
-                ");";
+    public static void createTables() {
+        createTablesTickets();
+        createTablesUsers();
+    }
 
-        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()){
-            stmt.execute(sqltickets);
-            System.out.println("Table ticket telah dibuat!!!");
-        } catch (SQLException e){
-            System.out.println("Gagal membuat tabel: " + e.getMessage());
-        }
+    public static void createTablesTickets(){
+        String sql = """
+                CREATE TABLE IF NOT EXISTS tickets (
+                    ticket_id TEXT PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    status TEXT DEFAULT 'Open',
+                    priority TEXT DEFAULT 'Medium',
+                    reporter_id TEXT,
+                    assignee_id TEXT,
+                    created_at TEXT,
+                    updated_at TEXT,
+                    resolved_at TEXT
+                );
+                """;
+        executeUpdate(sql, "Table tickets");
     }
 
     public static void createTablesUsers(){
-        String sqlusers = "create table if not exists users (\n" +
-                "    idEmployee INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    username TEXT,\n" +
-                "    password TEXT,\n" +
-                "    role TEXT,\n" +
-                "    department TEXT\n" +
-                ");";
+        String sql = """
+                CREATE TABLE IF NOT EXISTS users (
+                    employee_id TEXT PRIMARY KEY,
+                    full_name TEXT,
+                    username TEXT UNIQUE,
+                    email TEXT,
+                    password_hash TEXT,
+                    role TEXT,
+                    department TEXT,
+                    is_active BOOLEAN DEFAULT true,
+                    is_locked BOOLEAN DEFAULT false,
+                    created_at TEXT,
+                    updated_at TEXT,
+                    last_login_at TEXT
+                );
+                """;
 
-        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()){
-            stmt.execute(sqlusers);
-            System.out.println("Table user telah dibuat!!!");
-        } catch (SQLException e){
-            System.out.println("Gagal membuat tabel: " + e.getMessage());
+        executeUpdate(sql, "Table Users");
+    }
+
+    public static void executeUpdate(String sql, String tableName) {
+        try (Connection conn = getConnection();
+        Statement statement = conn.createStatement()) {
+            statement.execute(sql);
+            System.out.printf("%s telah dibuat / sudah ada \n", tableName);
+        }catch (SQLException e) {   
+            System.out.printf("Gagal membuat %s %s", tableName, e.getMessage());
         }
     }
 
     public static void main(String[] args){
-        createTablesTickets();
-        createTablesUsers();
-        getConnection();
+        createTables();
     }
 }

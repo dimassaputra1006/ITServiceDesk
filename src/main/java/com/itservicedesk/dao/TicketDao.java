@@ -12,9 +12,15 @@ public class TicketDao {
 
     // ==================== CREATE ====================
     public boolean insertTicket(Ticket ticket) {
-        String sql = "INSERT INTO tickets * VALUES (?,?,?,?,?,?,?,?,?,?)";
+        String sql = """
+            INSERT INTO tickets (ticket_id, title, description, status, reporter_id,
+                                 assignee_id, priority, created_at, updated_at, resolved_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, ticket.getTicketId());
             ps.setString(2, ticket.getTitle());
             ps.setString(3, ticket.getDescription());
@@ -25,8 +31,10 @@ public class TicketDao {
             ps.setObject(8, ticket.getCreatedAt());
             ps.setObject(9, ticket.getUpdatedAt());
             ps.setObject(10, ticket.getResolvedAt());
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            System.err.println("Error insert ticket: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -37,10 +45,12 @@ public class TicketDao {
         String sql = "SELECT * FROM tickets WHERE ticket_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, ticketId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
         } catch (SQLException e) {
+            System.err.println("Error find ticketId: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -48,130 +58,75 @@ public class TicketDao {
 
     public List<Ticket> getAllTickets() {
         List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT  * FROM tickets ORDER BY created_at DESC";
+        String sql = "SELECT * FROM tickets ORDER BY created_at DESC";
         try (Connection conn = DatabaseConfig.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
+
             while (rs.next()) tickets.add(mapRow(rs));
         } catch (SQLException e) {
+            System.err.println("Error get all tickets: " + e.getMessage());
             e.printStackTrace();
         }
         return tickets;
     }
 
-    public List<Ticket> getTicketsByReporter(String reporterId) {
-        List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT * FROM tickets WHERE reporter_id = ? ORDER BY created_at DESC";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, reporterId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) tickets.add(mapRow(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tickets;
-    }
-
-    public List<Ticket> getTicketsByAssignee(String assigneeId) {
-        List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT * FROM tickets WHERE assignee_id = ? ORDER BY created_at DESC";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, assigneeId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) tickets.add(mapRow(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tickets;
-    }
-
-    public List<Ticket> getUnassignedTickets() {
-        List<Ticket> tickets = new ArrayList<>();
-        String sql = "SELECT * FROM tickets WHERE assignee_id IS NULL ORDER BY created_at DESC";
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) tickets.add(mapRow(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tickets;
-    }
-
-    // ==================== UPDATE ====================
-    public boolean updateTicket(Ticket ticket) {
-        String sql = "UPDATE tickets SET title=?, description=?, status=?, reporter_id=?, " +
-                "assignee_id=?, priority=?, updated_at=?, resolved_at=? WHERE id=?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, ticket.getTitle());
-            ps.setString(2, ticket.getDescription());
-            ps.setString(3, ticket.getStatus());
-            ps.setString(4, ticket.getReporterId());
-            ps.setString(5, ticket.getAssigneeId());
-            ps.setString(6, ticket.getPriority());
-            ps.setObject(7, LocalDateTime.now());
-            ps.setObject(8, ticket.getResolvedAt());
-            ps.setString(9, ticket.getTicketId());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    // Claim tiket (hanya jika belum diassign)
+    // ==================== UPDATE STATUS ====================
     public boolean claimTicket(String ticketId, String assigneeId) {
-        String sql = "UPDATE tickets SET assignee_id=?, status='In Progress', updated_at=? WHERE id=? AND assignee_id IS NULL";
+        String sql = """
+            UPDATE tickets 
+            SET assignee_id = ?, status = 'In Progress', updated_at = ? 
+            WHERE ticket_id = ? AND assignee_id IS NULL
+            """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, assigneeId);
             ps.setObject(2, LocalDateTime.now());
             ps.setString(3, ticketId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            System.err.println("Error claim ticket: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
 
     public boolean resolveTicket(String ticketId) {
-        String sql = "UPDATE tickets SET status='Resolved', resolved_at=?, updated_at=? WHERE id=?";
+        String sql = """
+            UPDATE tickets 
+            SET status = 'Resolved', resolved_at = ?, updated_at = ? 
+            WHERE ticket_id = ?
+            """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setObject(1, LocalDateTime.now());
-            ps.setObject(2, LocalDateTime.now());
+
+            LocalDateTime now = LocalDateTime.now();
+            ps.setObject(1, now);
+            ps.setObject(2, now);
             ps.setString(3, ticketId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            System.err.println("Error resolve ticket: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
 
     public boolean closeTicket(String ticketId) {
-        String sql = "UPDATE tickets SET status='Closed', updated_at=? WHERE id=?";
+        String sql = """
+            UPDATE tickets 
+            SET status = 'Closed', updated_at = ? 
+            WHERE ticket_id = ?
+            """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setObject(1, LocalDateTime.now());
             ps.setString(2, ticketId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    // ==================== DELETE ====================
-    public boolean deleteTicket(String ticketId) {
-        String sql = "DELETE FROM tickets WHERE id=?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, ticketId);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
+            System.err.println("Error close ticket: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -179,23 +134,22 @@ public class TicketDao {
 
     // ==================== HELPER ====================
     private Ticket mapRow(ResultSet rs) throws SQLException {
-        Ticket ticket = new Ticket();
-        ticket.setTicketId(rs.getString("ticket_id"));
-        ticket.setTitle(rs.getString("title"));
-        ticket.setDescription(rs.getString("description"));
-        ticket.setStatus(rs.getString("status"));
-        ticket.setReporterId(rs.getString("reporter_id"));
-        ticket.setAssigneeId(rs.getString("assignee_id"));
-        ticket.setPriority(rs.getString("priority"));
+        return new Ticket(
+                rs.getString("ticket_id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getString("status"),
+                rs.getString("reporter_id"),
+                rs.getString("assignee_id"),
+                rs.getString("priority"),
+                getLocalDateTime(rs, "created_at"),
+                getLocalDateTime(rs, "updated_at"),
+                getLocalDateTime(rs, "resolved_at")
+        );
+    }
 
-        Timestamp ts;
-        ts = rs.getTimestamp("created_at");
-        if (ts != null) ticket.setCreatedAt(ts.toLocalDateTime());
-        ts = rs.getTimestamp("updated_at");
-        if (ts != null) ticket.setUpdatedAt(ts.toLocalDateTime());
-        ts = rs.getTimestamp("resolved_at");
-        if (ts != null) ticket.setResolvedAt(ts.toLocalDateTime());
-
-        return ticket;
+    private LocalDateTime getLocalDateTime(ResultSet rs, String column) throws SQLException {
+        Timestamp ts = rs.getTimestamp(column);
+        return ts != null ? ts.toLocalDateTime() : null;
     }
 }
