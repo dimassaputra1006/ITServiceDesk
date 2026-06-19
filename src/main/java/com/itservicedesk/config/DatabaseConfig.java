@@ -22,6 +22,7 @@ public class DatabaseConfig {
     public static void createTables() {
         createTablesTickets();
         createTablesUsers();
+        createTableActivityLog();
     }
 
     public static void createTablesTickets(){
@@ -61,6 +62,20 @@ public class DatabaseConfig {
                 """;
 
         executeUpdate(sql, "Table Users");
+    }
+
+    public static void createTableActivityLog() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS activity_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ticket_id TEXT NOT NULL,
+                    analyst_id TEXT,
+                    action TEXT NOT NULL,
+                    message TEXT,
+                    created_at TEXT
+                );
+                """;
+        executeUpdate(sql, "Table activity_log");
     }
 
     public static void executeUpdate(String sql, String tableName) {

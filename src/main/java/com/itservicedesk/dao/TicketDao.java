@@ -71,12 +71,107 @@ public class TicketDao {
         return tickets;
     }
 
+    public List<Ticket> getHistoryTickets() {
+        List<Ticket> tickets = new ArrayList<>();
+        String sql = """
+            SELECT * FROM tickets
+            WHERE status IN ('Resolved', 'Closed')
+            ORDER BY updated_at DESC
+            """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) tickets.add(mapRow(rs));
+        } catch (SQLException e) {
+            System.err.println("Error get history tickets: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return tickets;
+    }
+
+    public List<Ticket> getQueueTickets() {
+        List<Ticket> tickets = new ArrayList<>();
+        String sql = """
+            SELECT * FROM tickets WHERE status = 'Open'
+            ORDER BY
+                CASE priority
+                    WHEN 'Critical' THEN 1
+                    WHEN 'High' THEN 2
+                    WHEN 'Medium' THEN 3
+                    WHEN 'Low' THEN 4
+                    ELSE 5
+                END,
+                created_at ASC
+            """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) tickets.add(mapRow(rs));
+        } catch (SQLException e) {
+            System.err.println("Error get queue tickets: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return tickets;
+    }
+
+    public List<Ticket> getActiveTickets(String assigneeId) {
+        List<Ticket> tickets = new ArrayList<>();
+        String sql = """
+            SELECT * FROM tickets
+            WHERE status = 'In Progress' AND assignee_id = ?
+            ORDER BY updated_at DESC
+            """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, assigneeId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) tickets.add(mapRow(rs));
+        } catch (SQLException e) {
+            System.err.println("Error get active tickets: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return tickets;
+    }
+
+    public int countByStatus(String status) {
+        String sql = "SELECT COUNT(*) FROM tickets WHERE status = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            System.err.println("Error count by status: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    public int countActiveByAssignee(String assigneeId) {
+        if (assigneeId == null) return 0;
+        String sql = "SELECT COUNT(*) FROM tickets WHERE status = 'In Progress' AND assignee_id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, assigneeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (SQLException e) {
+            System.err.println("Error count active tickets: " + e.getMessage());
+        }
+        return 0;
+    }
+
     // ==================== UPDATE STATUS ====================
     public boolean claimTicket(String ticketId, String assigneeId) {
         String sql = """
             UPDATE tickets 
             SET assignee_id = ?, status = 'In Progress', updated_at = ? 
-            WHERE ticket_id = ? AND assignee_id IS NULL
+            WHERE ticket_id = ?
+              AND assignee_id IS NULL
+              AND status = 'Open'
             """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -97,6 +192,7 @@ public class TicketDao {
             UPDATE tickets 
             SET status = 'Resolved', resolved_at = ?, updated_at = ? 
             WHERE ticket_id = ?
+              AND status = 'In Progress'
             """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -113,11 +209,31 @@ public class TicketDao {
         }
     }
 
+    public boolean releaseTicket(String ticketId, String assigneeId) {
+        String sql = """
+            UPDATE tickets
+            SET assignee_id = NULL, status = 'Open', updated_at = ?
+            WHERE ticket_id = ? AND assignee_id = ? AND status = 'In Progress'
+            """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setObject(1, LocalDateTime.now());
+            ps.setString(2, ticketId);
+            ps.setString(3, assigneeId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error release ticket: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean closeTicket(String ticketId) {
         String sql = """
             UPDATE tickets 
             SET status = 'Closed', updated_at = ? 
             WHERE ticket_id = ?
+              AND status IN ('In Progress', 'Resolved')
             """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

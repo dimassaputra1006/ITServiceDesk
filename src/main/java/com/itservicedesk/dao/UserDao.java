@@ -106,6 +106,26 @@ public class UserDao {
         return users;
     }
 
+    public List<User> getActiveItStaff() {
+        List<User> users = new ArrayList<>();
+        String sql = """
+            SELECT * FROM users
+            WHERE is_active = true
+              AND lower(department) = 'it'
+            ORDER BY full_name ASC
+            """;
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error get active IT staff: " + e.getMessage());
+        }
+        return users;
+    }
+
     // ==================== UPDATE ====================
     public boolean updateUser(User user) {
         String sql = "UPDATE users SET full_name = ?, username = ?, email = ?, password_hash = ?, "
@@ -229,16 +249,20 @@ public class UserDao {
         user.setIsActive(rs.getBoolean("is_active"));
         user.setIsLocked(rs.getBoolean("is_locked"));
 
-        // Handle datetime yang mungkin null
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        if (createdAt != null) user.setCreatedAt(createdAt.toLocalDateTime());
-
-        Timestamp updatedAt = rs.getTimestamp("updated_at");
-        if (updatedAt != null) user.setUpdatedAt(updatedAt.toLocalDateTime());
-
-        Timestamp lastLoginAt = rs.getTimestamp("last_login_at");
-        if (lastLoginAt != null) user.setLastLoginAt(lastLoginAt.toLocalDateTime());
+        user.setCreatedAt(parseDateTime(rs.getString("created_at")));
+        user.setUpdatedAt(parseDateTime(rs.getString("updated_at")));
+        user.setLastLoginAt(parseDateTime(rs.getString("last_login_at")));
 
         return user;
+    }
+
+    private LocalDateTime parseDateTime(String value) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            if (value.length() > 23) value = value.substring(0, 23);
+            return LocalDateTime.parse(value);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

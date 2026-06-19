@@ -1,0 +1,155 @@
+/* =============================================
+   IT Service Desk - Dark Theme (Variable Based)
+   ============================================= */
+
+.root {
+    /* === PRIMARY (Deep Blue) === */
+    -fx-primary-50: #EFF6FF;
+    -fx-primary-100: #DBEAFE;
+    -fx-primary-200: #BFDBFE;
+    -fx-primary-300: #93C5FD;
+    -fx-primary-400: #60A5FA;
+    -fx-primary-500: #1E40AF;   /* Warna utama */
+    -fx-primary-600: #1E3A8A;
+    -fx-primary-700: #1E3A8A;
+    -fx-primary-800: #1E2A5E;
+    -fx-primary-900: #1E223F;
+    -fx-primary-950: #0F172A;
+
+    /* === SECONDARY (Slate) === */
+    -fx-secondary-50: #F8FAFC;
+    -fx-secondary-500: #64748B;
+    -fx-secondary-600: #475569;
+    -fx-secondary-700: #334155;
+    -fx-secondary-800: #1E2937;
+    -fx-secondary-900: #0F172A;
+    -fx-secondary-950: #020617;
+
+    /* === ACCENT === */
+    -fx-success: #22C55E;
+    -fx-warning: #EAB308;
+    -fx-danger: #EF4444;
+    -fx-critical: #B91C1C;
+
+    /* === TEXT === */
+    -fx-text-main: #F8FAFC;
+    -fx-text-muted: #94A3B8;
+    -fx-text-on-primary: #FFFFFF;
+
+    /* Base JavaFX Override */
+    -fx-background: -fx-secondary-950;
+    -fx-base: -fx-secondary-900;
+    -fx-control-inner-background: -fx-secondary-800;
+}
+
+/* Background Utama */
+.root {
+    -fx-background-color: -fx-secondary-950;
+}
+
+/* Navbar */
+.navbar {
+    -fx-background-color: -fx-secondary-800;
+    -fx-padding: 12 20;
+    -fx-border-color: -fx-secondary-700;
+    -fx-border-width: 0 0 1 0;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-muted;
+    -fx-padding: 8 16;
+    -fx-font-size: 14px;
+}
+
+.nav-button-active {
+    -fx-background-color: -fx-primary-500;
+    -fx-text-fill: -fx-text-on-primary;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+}
+
+/* Main Content */
+.main-content {
+    -fx-padding: 20;
+    -fx-background-color: transparent;
+}
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-main;
+}
+
+/* === TICKET CARD (Custom Card + Accordion) === */
+.ticket-card {
+    -fx-background-color: -fx-secondary-900;
+    -fx-background-radius: 8;
+    -fx-border-color: -fx-secondary-700;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.3, 0, 4);
+}
+
+.ticket-header {
+    -fx-alignment: center-left;
+}
+
+.ticket-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-main;
+}
+
+.ticket-meta {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-muted;
+}
+
+/* Status & Priority */
+.status-open { -fx-text-fill: -fx-danger; -fx-font-weight: bold; }
+.status-in-progress { -fx-text-fill: -fx-warning; -fx-font-weight: bold; }
+.status-resolved { -fx-text-fill: -fx-success; -fx-font-weight: bold; }
+.status-closed { -fx-text-fill: -fx-secondary-500; -fx-font-weight: bold; }
+
+.priority-critical { -fx-text-fill: -fx-critical; -fx-font-weight: bold; }
+.priority-high { -fx-text-fill: -fx-danger; }
+.priority-medium { -fx-text-fill: -fx-warning; }
+.priority-low { -fx-text-fill: -fx-success; }
+
+/* Detail Panel (Accordion Content) */
+.ticket-detail {
+    -fx-padding: 16 0 0 0;
+    -fx-border-color: -fx-secondary-700;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-style: dashed;
+}
+
+/* Buttons */
+.action-button {
+    -fx-background-color: -fx-primary-500;
+    -fx-text-fill: -fx-text-on-primary;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: -fx-primary-600;
+}
+
+.btn-claim { -fx-background-color: -fx-primary-500; }
+.btn-resolve { -fx-background-color: -fx-success; -fx-text-fill: #0F172A; }
+.btn-close { -fx-background-color: -fx-secondary-600; }
+
+/* Utility */
+.label-muted {
+    -fx-text-fill: -fx-text-muted;
+}
+
+.ticket-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

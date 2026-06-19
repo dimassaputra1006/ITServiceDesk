@@ -1,123 +1,123 @@
 # IT Service Desk
-Aplikasi desktop JavaFX + SQLite untuk pengelolaan tiket IT (khusus IT Staff/Technician).
+Aplikasi desktop JavaFX + SQLite untuk simulasi operasional Service Desk internal.
+
+Desain UI terinspirasi dari tampilan workstation pada [ServiceDesk Simulator](https://servicedesk-simulator.com/), dengan fokus utama pada **Ticket Queue** dan **Active Room**.
 
 ---
 
-## Fitur Saat Ini (Minimum Viable Product)
-* **Dashboard Ticket Queue:** Memantau antrean tiket masuk.
-* **Dynamic Ticket Cards:** Daftar tiket dirender secara dinamis dengan visual yang informatif.
-* **Accordion Detail:** Klik tombol *"Detail"* untuk melakukan *expand/collapse* deskripsi dan tombol aksi.
-* **Modern Dark Theme:** Menggunakan CSS Variables, nyaman untuk penggunaan jangka panjang.
-* **Local SQLite Integration:** Penyimpanan data lokal yang ringan dan cepat tanpa perlu setup server database terpisah.
+## Penting untuk AI Agent / Contributor
+Jika kamu menggunakan AI Agent (Cursor Agent, Copilot Agent, atau tool otomatis lain), **WAJIB baca README ini terlebih dahulu sebelum mengubah kode**.  
+Tujuannya supaya perubahan tetap konsisten dengan arsitektur, flow tiket, dan aturan run project.
 
 ---
 
-## Tech Stack & Prerequisites
-
-| Komponen | Teknologi / Versi | Catatan |
-| :--- | :--- | :--- |
-| **Bahasa Utama** | Java 21 | Gunakan JDK 21 (LTS) |
-| **Framework UI** | JavaFX 21 | Berjalan di atas skema modular |
-| **Database** | SQLite | Serverless via `sqlite-jdbc` |
-| **Build Tool** | Apache Maven | Manajemen dependensi otomatis |
+## Fitur Saat Ini
+- **Ticket Queue**: Menampilkan tiket `Open` yang belum diklaim, urut prioritas.
+- **Active Room**: Menampilkan tiket `In Progress` milik analyst aktif.
+- **System Feed**: Menampilkan ringkasan ticket history (`Resolved`/`Closed`) dan log aktivitas terbaru.
+- **Live Telemetry**: Counter real-time untuk Queue, Active, dan Resolved.
+- **Analyst Switcher**: Pilih analyst IT aktif langsung dari toolbar.
+- **Create New Ticket**: Buat tiket baru dari UI (`+ NEW TICKET`).
+- **Release Ticket**: Kembalikan tiket dari Active Room ke Queue.
+- **Ticket Lifecycle**: `Open → In Progress → Resolved/Closed`.
+- **Activity Log (DB)**: Semua aksi utama (create/claim/release/resolve/close) direkam ke tabel `activity_log`.
 
 ---
 
+## Yang Diubah dari Versi Awal (Changelog Ringkas)
 
-## Panduan Setup Project
+### V1 (Awal)
+- Dashboard dasar daftar ticket.
+- Styling dark theme sederhana.
 
-Ikuti langkah-langkah di bawah ini untuk memasang dan menjalankan project di lingkungan lokal kamu:
+### V2 (Sebelumnya)
+- Rework UI ke split panel: Ticket Queue + Active Room.
+- Tema workstation ala simulator.
+- Counter telemetry dan aksi claim/resolve/close.
 
-### 1. Clone Project dari GitHub
+### V3 (Update sekarang)
+- Tambah **System Feed** di panel ketiga.
+- Tambah **Create New Ticket dialog**.
+- Tambah **Release Ticket** dari Active Room.
+- Tambah **Analyst selector** (IT staff aktif).
+- Tambah tabel + DAO **activity_log**.
+- Tambah **TicketService** untuk business flow + logging aksi.
+- Seed diperbarui supaya membersihkan `activity_log`.
 
-Buka terminal atau command prompt, lalu jalankan perintah berikut untuk menggandakan repositori:
+### V3.1 (Hardening flow)
+- Matangkan aturan transisi status di level query SQL:
+  - `Claim` hanya boleh dari status `Open`.
+  - `Resolve` hanya boleh dari status `In Progress`.
+  - `Close` hanya boleh dari status `In Progress` atau `Resolved`.
+- Tujuan: mencegah status tiket loncat/inkonsisten saat aksi dipanggil berulang atau urutannya salah.
 
-```bash
-# Clone menggunakan HTTPS
-git clone https://github.com/dimassaputra1006/ITServiceDesk.git
+### V3.2 (Stabilitas tombol & konsistensi UI)
+- Perbaikan parsing datetime di `UserDao` agar data analyst IT bisa terbaca normal (ComboBox analyst kembali berfungsi).
+- Aplikasi sekarang auto-create tabel saat startup (`DatabaseConfig.createTables()`), jadi `activity_log` tidak lagi missing saat run langsung.
+- Tombol aksi (`Claim/Resolve/Close/Release`) sekarang memberi feedback jika aksi gagal (mis. status tidak valid / analyst belum dipilih).
+- Dialog **New Ticket** sekarang menggunakan stylesheet yang sama dengan main screen agar tampilan lebih konsisten.
 
-# Atau clone menggunakan SSH (jika dikonfigurasi)
-git clone git@github.com:dimassaputra1006/ITServiceDesk.git
+### V3.3 (Accordion UI)
+- Tampilan tiket di **Ticket Queue** diubah ke format accordion (expand/collapse per tiket).
+- Tampilan sesi tiket di **Active Room** juga menggunakan accordion agar detail aksi lebih terstruktur.
+- Ditambahkan styling accordion khusus agar tetap konsisten dengan tema workstation.
+
+---
+
+## Tech Stack
+| Komponen | Teknologi |
+| :--- | :--- |
+| Bahasa | Java 21+ |
+| UI | JavaFX 21 |
+| Database | SQLite (`sqlite-jdbc`) |
+| Build Tool | Maven Wrapper (`mvnw` / `mvnw.cmd`) |
+
+---
+
+## Cara Run (Windows PowerShell)
+
+1. Buka terminal di root project:
+```powershell
+cd "d:\Semester_4\OOP\Cursor version\ITServiceDesk"
 ```
-Setelah selesai, masuk ke direktori project:
 
-```bash
-cd it-servicedesk
+2. Set `JAVA_HOME` (sesuaikan versi JDK di laptop kamu):
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"
 ```
 
-### 2. Membuka Project di IDE
-
-Buka aplikasi IDE pilihan kamu (disarankan IntelliJ IDEA).
-
-- Pilih menu **Open** atau **Import Project**.
-- Arahkan ke folder hasil clone tadi dan pilih file `pom.xml` atau folder root-nya untuk memuat sebagai project Maven.
-
-### 3. Konfigurasi SDK & Language Level
-
-Pastikan lingkungan Java mengarah ke versi yang tepat:
-
-- Masuk ke menu **File → Project Structure → Project**.
-- Pada bagian **Project SDK**, pilih atau tambahkan JDK 21.
-- Pastikan **Language Level** disetel ke **21 - Spiral**.
-
-### 4. Sinkronisasi Dependensi
-
-Buka panel Maven di sebelah kanan IDE, lalu klik ikon 🔄 **Reload All Maven Projects** untuk mengunduh semua library yang dibutuhkan berdasarkan file `pom.xml`.
-
-### 5. Konfigurasi Run (VM Options)
-
-Karena JavaFX menggunakan sistem modular, kamu perlu menambahkan parameter modul saat menjalankan aplikasi di IDE.
-
-Edit **Run Configuration** untuk kelas `ITServiceDeskApp`.
-
-Tambahkan baris berikut pada bagian **VM Options**:
-
-```bash
---module-path /path/to/your/.m2/repository/org/openjfx/javafx-base/21.0.6/javafx-base-21.0.6-linux.jar:/path/to/your/.m2/repository/org/openjfx/javafx-controls/21.0.6/javafx-controls-21.0.6-linux.jar:/path/to/your/.m2/repository/org/openjfx/javafx-fxml/21.0.6/javafx-fxml-21.0.6-linux.jar:/path/to/your/.m2/repository/org/openjfx/javafx-graphics/21.0.6/javafx-graphics-21.0.6-linux.jar --add-modules javafx.controls,javafx.fxml
+3. Inisialisasi tabel:
+```powershell
+.\mvnw.cmd -q exec:java "-Dexec.mainClass=com.itservicedesk.config.DatabaseConfig"
 ```
 
-⚠️ **Catatan Penting:** Sesuaikan path `/home/disa/.m2/repository/...` di atas sesuai dengan direktori lokal Maven kamu (misalnya jika kamu pindah ke komputer lain atau sistem operasi non-Linux).
-
-### 6. Database & Seeding Dummy Data
-Jalankan main method yang ada di dalam kelas:
-
-`src/main/java/com/itservicedesk/config/DatabaseConfig.java`
-
-Sebelum menjalankan aplikasi utama, isi database dengan skema tabel awal dan data dummy:
-
-Jalankan main method yang ada di dalam kelas:
-
-`src/main/java/com/itservicedesk/seed/Seed.java`
-
-### 7. Menjalankan Aplikasi
-
-Setelah database terisi, jalankan aplikasi utama melalui kelas:
-
-`src/main/java/com/itservicedesk/ITServiceDeskApp.java`
-
-## 📂 Struktur Project
-
+4. Seed data dummy:
+```powershell
+.\mvnw.cmd -q exec:java "-Dexec.mainClass=com.itservicedesk.seed.Seed"
 ```
-.
-├── src/
-│   └── main/
-│       ├── java/com/itservicedesk/
-│       │   ├── config/          # Pengaturan konfigurasi aplikasi / database
-│       │   ├── controller/      # Logika pengontrol UI (e.g., TicketController.java)
-│       │   ├── dao/             # Data Access Object untuk query ke SQLite
-│       │   ├── model/           # Kelas entitas / struktur data (e.g., Ticket.java)
-│       │   ├── seed/            # Script/Class penanam data dummy awal
-│       │   ├── service/         # Logika bisnis utama (Business Logic Layer)
-│       │   ├── util/            # Kelas pembantu / helper (date formatter, dll)
-│       │   └── ITServiceDeskApp.java  # Main class aplikasi JavaFX
-│       └── resources/
-│           ├── css/
-│           │   └── styles.css   # Seluruh styling tampilan aplikasi
-│           ├── database/        # Lokasi file database SQLite (.db) jika disimpan lokal
-│           ├── layout_dashboard.fxml  # Layout visual untuk halaman utama dashboard
-│           └── layout_directory.fxml  # Layout visual untuk direktori/halaman lainnya
-├── mvnw                     # Maven wrapper script (Linux/macOS)
-├── mvnw.cmd                 # Maven wrapper script (Windows)
-├── pom.xml                  # File konfigurasi dependensi Maven
-└── README.md                # Dokumentasi project
+
+5. Jalankan aplikasi:
+```powershell
+.\mvnw.cmd javafx:run
+```
+
+> Catatan: di PowerShell gunakan `.\mvnw.cmd`, bukan `mvnw.cmd`.
+
+---
+
+## Struktur Project
+```text
+src/main/java/com/itservicedesk/
+├── config/        # Koneksi DB & create table
+├── controller/    # Controller JavaFX (TicketController)
+├── dao/           # Akses data SQLite (TicketDao, UserDao, ActivityLogDao)
+├── model/         # Entitas (Ticket, User, ActivityLog)
+├── seed/          # Seed data dummy
+├── service/       # Business flow (TicketService)
+└── ITServiceDeskApp.java
+
+src/main/resources/
+├── css/styles.css
+├── database/
+└── layout_dashboard.fxml
 ```

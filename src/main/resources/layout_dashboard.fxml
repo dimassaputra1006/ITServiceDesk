@@ -3,57 +3,128 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.itservicedesk.controller.TicketController"
-            stylesheets="@/css/styles.css">
+<BorderPane prefHeight="768.0" prefWidth="1366.0" styleClass="workstation-root"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.itservicedesk.controller.TicketController">
 
     <top>
-        <HBox prefHeight="60" styleClass="navbar">
-            <children>
-<!--                <Label text="🛠️ DevOps Service Desk" styleClass="app-title" />-->
+        <VBox spacing="0">
+            <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="20">
+                <padding>
+                    <Insets top="10" right="20" bottom="10" left="20"/>
+                </padding>
+                <children>
+                    <VBox spacing="2">
+                        <Label text="IT SERVICE DESK" styleClass="brand-title"/>
+                        <Label text="WORKSTATION v1.0" styleClass="brand-subtitle"/>
+                    </VBox>
 
-                <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="8">
-                    <children>
-                        <Button text="Dashboard (Ticket Queue)" styleClass="nav-button-active" fx:id="btnDashboard"/>
-                        <Button text="Active Directory" styleClass="nav-button" fx:id="btnActiveDirectory"/>
-                    </children>
-                </HBox>
+                    <Region HBox.hgrow="ALWAYS"/>
 
-                <HBox alignment="CENTER_RIGHT" spacing="12">
-                    <children>
-                        <TextField promptText="Cari tiket..." prefWidth="280" styleClass="search-field"/>
-                        <Button text="🔄 Refresh" styleClass="action-button"/>
-                    </children>
-                </HBox>
-            </children>
-        </HBox>
+                    <HBox spacing="24" alignment="CENTER">
+                        <VBox alignment="CENTER" spacing="2">
+                            <Label text="QUEUE" styleClass="telemetry-label"/>
+                            <Label fx:id="lblQueueCount" text="0" styleClass="telemetry-value"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="2">
+                            <Label text="ACTIVE" styleClass="telemetry-label"/>
+                            <Label fx:id="lblActiveCount" text="0" styleClass="telemetry-value-active"/>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="2">
+                            <Label text="RESOLVED" styleClass="telemetry-label"/>
+                            <Label fx:id="lblResolvedCount" text="0" styleClass="telemetry-value"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <VBox alignment="CENTER_RIGHT" spacing="2">
+                        <Label fx:id="lblAnalystName" text="ANALYST: ---" styleClass="analyst-name"/>
+                        <Label fx:id="lblShiftStatus" text="STATUS: ON SHIFT" styleClass="analyst-status"/>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <HBox styleClass="toolbar" alignment="CENTER_LEFT" spacing="12">
+                <padding>
+                    <Insets top="8" right="20" bottom="8" left="20"/>
+                </padding>
+                <children>
+                    <ComboBox fx:id="cbAnalyst" promptText="Select Analyst" prefWidth="220" styleClass="filter-combo"/>
+                    <TextField fx:id="txtSearch" promptText="Search ticket..." prefWidth="260" styleClass="search-field"/>
+                    <ComboBox fx:id="cbFilterPriority" promptText="All Priorities" prefWidth="160" styleClass="filter-combo"/>
+                    <Button fx:id="btnNewTicket" text="+ NEW TICKET" styleClass="toolbar-button"/>
+                    <Button fx:id="btnRefresh" text="↻ REFRESH" styleClass="toolbar-button"/>
+                </children>
+            </HBox>
+        </VBox>
     </top>
 
     <center>
-        <VBox spacing="15.0" styleClass="main-content">
-            <children>
-                <!-- Header + Filter -->
-                <HBox alignment="CENTER_LEFT" spacing="15.0">
-                    <children>
-                        <Label text="Ticket Queue" styleClass="page-title"/>
+        <SplitPane dividerPositions="0.35,0.75" styleClass="workstation-split">
+            <!-- Ticket Queue -->
+            <VBox styleClass="panel queue-panel">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="[" styleClass="panel-bracket"/>
+                        <Label text="TICKET QUEUE" styleClass="panel-title"/>
+                        <Label text="]" styleClass="panel-bracket"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblQueueHint" text="AWAITING TRIAGE" styleClass="panel-hint"/>
+                    </HBox>
 
-                        <ComboBox fx:id="cbFilterPriority" promptText="Semua Prioritas" styleClass="filter-combo"/>
-                        <ComboBox fx:id="cbSortBy" promptText="Urutkan Berdasarkan" styleClass="filter-combo"/>
+                    <Separator styleClass="panel-separator"/>
 
-                        <Button text="+ Seed Dummy Ticket" fx:id="btnSeedTicket" styleClass="add-button"/>
-                    </children>
-                </HBox>
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="panel-scroll">
+                        <content>
+                            <VBox fx:id="queueContainer" spacing="8"/>
+                        </content>
+                    </ScrollPane>
+                </children>
+            </VBox>
 
-                <!-- Ticket List -->
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="ticket-scroll">
-                    <content>
-                        <VBox fx:id="ticketContainer" spacing="10.0"/>
-                    </content>
-                </ScrollPane>
-            </children>
-        </VBox>
+            <!-- Active Room -->
+            <VBox styleClass="panel active-panel">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="[" styleClass="panel-bracket"/>
+                        <Label text="ACTIVE ROOM" styleClass="panel-title"/>
+                        <Label text="]" styleClass="panel-bracket"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblActiveHint" text="NO SESSION" styleClass="panel-hint"/>
+                    </HBox>
+
+                    <Separator styleClass="panel-separator"/>
+
+                    <VBox fx:id="activeRoomContainer" VBox.vgrow="ALWAYS" spacing="12"/>
+                </children>
+            </VBox>
+
+            <!-- System Feed -->
+            <VBox styleClass="panel active-panel">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <children>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="[" styleClass="panel-bracket"/>
+                        <Label text="SYSTEM FEED" styleClass="panel-title"/>
+                        <Label text="]" styleClass="panel-bracket"/>
+                    </HBox>
+                    <Separator styleClass="panel-separator"/>
+                    <VBox fx:id="historyContainer" spacing="8"/>
+                    <Separator styleClass="panel-separator"/>
+                    <Label text="RECENT ACTIVITY" styleClass="active-label"/>
+                    <VBox fx:id="logContainer" spacing="6" VBox.vgrow="ALWAYS"/>
+                </children>
+            </VBox>
+        </SplitPane>
     </center>
 </BorderPane>

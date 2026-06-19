@@ -45,6 +45,7 @@ public class Seed {
     private static void clearExistingData() {
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement()) {
+            stmt.execute("DELETE FROM activity_log");
             stmt.execute("DELETE FROM tickets");
             stmt.execute("DELETE FROM users");
             System.out.println("Data lama dihapus.");

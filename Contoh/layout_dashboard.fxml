@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.itservicedesk.controller.TicketController"
+            stylesheets="@/css/styles.css">
+
+    <top>
+        <HBox prefHeight="60" styleClass="navbar">
+            <children>
+<!--                <Label text="🛠️ DevOps Service Desk" styleClass="app-title" />-->
+
+                <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="8">
+                    <children>
+                        <Button text="Dashboard (Ticket Queue)" styleClass="nav-button-active" fx:id="btnDashboard"/>
+                        <Button text="Active Directory" styleClass="nav-button" fx:id="btnActiveDirectory"/>
+                    </children>
+                </HBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+                    <children>
+                        <TextField promptText="Cari tiket..." prefWidth="280" styleClass="search-field"/>
+                        <Button text="🔄 Refresh" styleClass="action-button"/>
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="15.0" styleClass="main-content">
+            <children>
+                <!-- Header + Filter -->
+                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                    <children>
+                        <Label text="Ticket Queue" styleClass="page-title"/>
+
+                        <ComboBox fx:id="cbFilterPriority" promptText="Semua Prioritas" styleClass="filter-combo"/>
+                        <ComboBox fx:id="cbSortBy" promptText="Urutkan Berdasarkan" styleClass="filter-combo"/>
+
+                        <Button text="+ Seed Dummy Ticket" fx:id="btnSeedTicket" styleClass="add-button"/>
+                    </children>
+                </HBox>
+
+                <!-- Ticket List -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="ticket-scroll">
+                    <content>
+                        <VBox fx:id="ticketContainer" spacing="10.0"/>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

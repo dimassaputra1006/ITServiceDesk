@@ -1,155 +1,446 @@
 /* =============================================
-   IT Service Desk - Dark Theme (Variable Based)
+   IT Service Desk - ServiceDesk Simulator Theme
+   Inspired by servicedesk-simulator.com
    ============================================= */
 
-.root {
-    /* === PRIMARY (Deep Blue) === */
-    -fx-primary-50: #EFF6FF;
-    -fx-primary-100: #DBEAFE;
-    -fx-primary-200: #BFDBFE;
-    -fx-primary-300: #93C5FD;
-    -fx-primary-400: #60A5FA;
-    -fx-primary-500: #1E40AF;   /* Warna utama */
-    -fx-primary-600: #1E3A8A;
-    -fx-primary-700: #1E3A8A;
-    -fx-primary-800: #1E2A5E;
-    -fx-primary-900: #1E223F;
-    -fx-primary-950: #0F172A;
-
-    /* === SECONDARY (Slate) === */
-    -fx-secondary-50: #F8FAFC;
-    -fx-secondary-500: #64748B;
-    -fx-secondary-600: #475569;
-    -fx-secondary-700: #334155;
-    -fx-secondary-800: #1E2937;
-    -fx-secondary-900: #0F172A;
-    -fx-secondary-950: #020617;
-
-    /* === ACCENT === */
-    -fx-success: #22C55E;
-    -fx-warning: #EAB308;
-    -fx-danger: #EF4444;
-    -fx-critical: #B91C1C;
-
-    /* === TEXT === */
-    -fx-text-main: #F8FAFC;
-    -fx-text-muted: #94A3B8;
-    -fx-text-on-primary: #FFFFFF;
-
-    /* Base JavaFX Override */
-    -fx-background: -fx-secondary-950;
-    -fx-base: -fx-secondary-900;
-    -fx-control-inner-background: -fx-secondary-800;
+.workstation-root {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-background-color: #060a08;
 }
 
-/* Background Utama */
-.root {
-    -fx-background-color: -fx-secondary-950;
-}
-
-/* Navbar */
-.navbar {
-    -fx-background-color: -fx-secondary-800;
-    -fx-padding: 12 20;
-    -fx-border-color: -fx-secondary-700;
+/* === Status Bar === */
+.status-bar {
+    -fx-background-color: #0a100d;
+    -fx-border-color: #1a3d2e;
     -fx-border-width: 0 0 1 0;
 }
 
-.nav-button {
+.brand-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3dff8a;
+    -fx-letter-spacing: 2px;
+}
+
+.brand-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #4a6b58;
+}
+
+.telemetry-label {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4a6b58;
+    -fx-letter-spacing: 1px;
+}
+
+.telemetry-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c8d4cc;
+}
+
+.telemetry-value-active {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3dff8a;
+}
+
+.analyst-name {
+    -fx-font-size: 12px;
+    -fx-text-fill: #3dff8a;
+    -fx-letter-spacing: 1px;
+}
+
+.analyst-status {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4a6b58;
+}
+
+/* === Toolbar === */
+.toolbar {
+    -fx-background-color: #0d1410;
+    -fx-border-color: #1a3d2e;
+    -fx-border-width: 0 0 1 0;
+}
+
+.search-field {
+    -fx-background-color: #0a100d;
+    -fx-text-fill: #c8d4cc;
+    -fx-prompt-text-fill: #4a6b58;
+    -fx-border-color: #1a3d2e;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 6 10;
+    -fx-font-size: 12px;
+}
+
+.filter-combo {
+    -fx-background-color: #0a100d;
+    -fx-border-color: #1a3d2e;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-font-size: 12px;
+}
+
+.filter-combo .list-cell {
+    -fx-text-fill: #c8d4cc;
+    -fx-background-color: #0a100d;
+}
+
+.toolbar-button {
     -fx-background-color: transparent;
-    -fx-text-fill: -fx-text-muted;
-    -fx-padding: 8 16;
+    -fx-text-fill: #3dff8a;
+    -fx-border-color: #1a3d2e;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 6 14;
+    -fx-font-size: 11px;
+    -fx-cursor: hand;
+    -fx-letter-spacing: 1px;
+}
+
+.toolbar-button:hover {
+    -fx-background-color: #142820;
+    -fx-border-color: #3dff8a;
+}
+
+/* === Split Panels === */
+.workstation-split {
+    -fx-background-color: #060a08;
+    -fx-padding: 0;
+}
+
+.workstation-split > .split-pane-divider {
+    -fx-background-color: #1a3d2e;
+    -fx-padding: 0 1 0 1;
+}
+
+.panel {
+    -fx-background-color: #080d0a;
+}
+
+.queue-panel {
+    -fx-border-color: transparent #1a3d2e transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.active-panel {
+    -fx-background-color: #0a0f0c;
+}
+
+.panel-bracket {
     -fx-font-size: 14px;
-}
-
-.nav-button-active {
-    -fx-background-color: -fx-primary-500;
-    -fx-text-fill: -fx-text-on-primary;
-    -fx-padding: 8 16;
-    -fx-background-radius: 6;
-}
-
-/* Main Content */
-.main-content {
-    -fx-padding: 20;
-    -fx-background-color: transparent;
-}
-
-.page-title {
-    -fx-font-size: 24px;
+    -fx-text-fill: #2d5c44;
     -fx-font-weight: bold;
-    -fx-text-fill: -fx-text-main;
 }
 
-/* === TICKET CARD (Custom Card + Accordion) === */
-.ticket-card {
-    -fx-background-color: -fx-secondary-900;
-    -fx-background-radius: 8;
-    -fx-border-color: -fx-secondary-700;
-    -fx-border-radius: 8;
-    -fx-border-width: 1;
-    -fx-padding: 16;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0.3, 0, 4);
-}
-
-.ticket-header {
-    -fx-alignment: center-left;
-}
-
-.ticket-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: -fx-text-main;
-}
-
-.ticket-meta {
+.panel-title {
     -fx-font-size: 13px;
-    -fx-text-fill: -fx-text-muted;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3dff8a;
+    -fx-letter-spacing: 2px;
 }
 
-/* Status & Priority */
-.status-open { -fx-text-fill: -fx-danger; -fx-font-weight: bold; }
-.status-in-progress { -fx-text-fill: -fx-warning; -fx-font-weight: bold; }
-.status-resolved { -fx-text-fill: -fx-success; -fx-font-weight: bold; }
-.status-closed { -fx-text-fill: -fx-secondary-500; -fx-font-weight: bold; }
-
-.priority-critical { -fx-text-fill: -fx-critical; -fx-font-weight: bold; }
-.priority-high { -fx-text-fill: -fx-danger; }
-.priority-medium { -fx-text-fill: -fx-warning; }
-.priority-low { -fx-text-fill: -fx-success; }
-
-/* Detail Panel (Accordion Content) */
-.ticket-detail {
-    -fx-padding: 16 0 0 0;
-    -fx-border-color: -fx-secondary-700;
-    -fx-border-width: 1 0 0 0;
-    -fx-border-style: dashed;
+.panel-hint {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4a6b58;
+    -fx-letter-spacing: 1px;
 }
 
-/* Buttons */
-.action-button {
-    -fx-background-color: -fx-primary-500;
-    -fx-text-fill: -fx-text-on-primary;
-    -fx-font-size: 14px;
-    -fx-padding: 8 16;
-    -fx-background-radius: 6;
+.panel-separator {
+    -fx-padding: 8 0 8 0;
+    -fx-background-color: #1a3d2e;
+}
+
+.panel-separator .line {
+    -fx-border-color: #1a3d2e;
+    -fx-background-color: #1a3d2e;
+}
+
+.panel-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.panel-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* === Queue Ticket Row === */
+.queue-card {
+    -fx-background-color: #0d1410;
+    -fx-border-color: #1a3d2e;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-border-width: 1;
+    -fx-padding: 10 12;
     -fx-cursor: hand;
 }
 
-.action-button:hover {
-    -fx-background-color: -fx-primary-600;
+.queue-card:hover {
+    -fx-border-color: #2d5c44;
+    -fx-background-color: #101a14;
 }
 
-.btn-claim { -fx-background-color: -fx-primary-500; }
-.btn-resolve { -fx-background-color: -fx-success; -fx-text-fill: #0F172A; }
-.btn-close { -fx-background-color: -fx-secondary-600; }
-
-/* Utility */
-.label-muted {
-    -fx-text-fill: -fx-text-muted;
+.queue-card-selected {
+    -fx-border-color: #3dff8a;
+    -fx-background-color: #142820;
 }
 
-.ticket-scroll {
+.queue-id {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4a6b58;
+}
+
+.queue-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0ebe4;
+}
+
+.queue-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: #4a6b58;
+}
+
+/* === Active Room === */
+.active-empty {
+    -fx-text-fill: #4a6b58;
+    -fx-font-size: 13px;
+    -fx-padding: 40 20;
+    -fx-alignment: center;
+}
+
+.active-session {
+    -fx-background-color: #0d1410;
+    -fx-border-color: #2d5c44;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-border-width: 1;
+    -fx-padding: 16;
+    -fx-spacing: 12;
+}
+
+.active-session-header {
+    -fx-border-color: #1a3d2e;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 0 12 0;
+}
+
+.active-ticket-id {
+    -fx-font-size: 11px;
+    -fx-text-fill: #3dff8a;
+    -fx-letter-spacing: 1px;
+}
+
+.active-ticket-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0ebe4;
+}
+
+.active-label {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4a6b58;
+    -fx-letter-spacing: 1px;
+}
+
+.active-value {
+    -fx-font-size: 12px;
+    -fx-text-fill: #c8d4cc;
+}
+
+.active-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #a8b8ae;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 4;
+}
+
+/* === Badges === */
+.badge {
+    -fx-padding: 2 8;
+    -fx-background-radius: 2;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.badge-critical {
+    -fx-background-color: #3d1010;
+    -fx-text-fill: #ff4444;
+    -fx-border-color: #ff4444;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.badge-high {
+    -fx-background-color: #3d2010;
+    -fx-text-fill: #ff8844;
+    -fx-border-color: #ff8844;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.badge-medium {
+    -fx-background-color: #3d3010;
+    -fx-text-fill: #ffcc44;
+    -fx-border-color: #ffcc44;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.badge-low {
+    -fx-background-color: #103d20;
+    -fx-text-fill: #3dff8a;
+    -fx-border-color: #3dff8a;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.badge-status-open {
+    -fx-background-color: #1a2030;
+    -fx-text-fill: #6699ff;
+    -fx-border-color: #6699ff;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+.badge-status-progress {
+    -fx-background-color: #203010;
+    -fx-text-fill: #ffcc44;
+    -fx-border-color: #ffcc44;
+    -fx-border-radius: 2;
+    -fx-border-width: 1;
+}
+
+/* === Buttons === */
+.btn-claim {
+    -fx-background-color: #142820;
+    -fx-text-fill: #3dff8a;
+    -fx-border-color: #3dff8a;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 5 12;
+    -fx-font-size: 11px;
+    -fx-cursor: hand;
+    -fx-letter-spacing: 1px;
+}
+
+.btn-claim:hover {
+    -fx-background-color: #1a3d2e;
+}
+
+.btn-resolve {
+    -fx-background-color: #103d20;
+    -fx-text-fill: #3dff8a;
+    -fx-border-color: #3dff8a;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 8 20;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-letter-spacing: 1px;
+}
+
+.btn-resolve:hover {
+    -fx-background-color: #1a5030;
+}
+
+.btn-close {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: #888888;
+    -fx-border-color: #444444;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 8 20;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-letter-spacing: 1px;
+}
+
+.btn-close:hover {
+    -fx-background-color: #2a2020;
+    -fx-border-color: #ff4444;
+    -fx-text-fill: #ff4444;
+}
+
+.btn-release {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
+    -fx-text-fill: #4a6b58;
+    -fx-border-color: #1a3d2e;
+    -fx-border-radius: 2;
+    -fx-background-radius: 2;
+    -fx-padding: 8 16;
+    -fx-font-size: 11px;
+    -fx-cursor: hand;
+}
+
+.btn-release:hover {
+    -fx-text-fill: #ff8844;
+    -fx-border-color: #ff8844;
+}
+
+/* === Legacy compat (kept minimal) === */
+.label-muted {
+    -fx-text-fill: #4a6b58;
+}
+
+/* === Dialog styling (New Ticket) === */
+.workstation-dialog {
+    -fx-background-color: #0a100d;
+}
+
+.workstation-dialog .header-panel {
+    -fx-background-color: #0d1410;
+}
+
+.workstation-dialog .header-panel .label {
+    -fx-text-fill: #3dff8a;
+    -fx-font-weight: bold;
+}
+
+.workstation-dialog .content.label {
+    -fx-text-fill: #c8d4cc;
+}
+
+.dialog-form {
+    -fx-padding: 8;
+    -fx-background-color: transparent;
+}
+
+.dialog-form .label {
+    -fx-text-fill: #c8d4cc;
+}
+
+/* === Accordion Ticket Style === */
+.accordion-pane {
+    -fx-text-fill: #c8d4cc;
+}
+
+.accordion-pane > .title {
+    -fx-background-color: #0d1410;
+    -fx-border-color: #1a3d2e;
+    -fx-border-width: 1;
+    -fx-padding: 8 10;
+}
+
+.accordion-pane:expanded > .title {
+    -fx-background-color: #142820;
+    -fx-border-color: #3dff8a;
+}
+
+.accordion-pane > .title > .arrow-button .arrow {
+    -fx-background-color: #3dff8a;
+}
+
+.accordion-pane > .content {
+    -fx-background-color: #0b120e;
+    -fx-border-color: #1a3d2e;
+    -fx-border-width: 0 1 1 1;
+}
+
+.accordion-content {
+    -fx-padding: 10 12 12 12;
 }
