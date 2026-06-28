@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-253.32098.101">
+  <component name="dataSourceStorageLocal" created-in="IU-261.23567.138">
     <data-source name="devOpsServiceDesk.db" uuid="81333706-571e-4cfb-8fdb-b3fda11bb8d0">
       <database-info product="SQLite" version="3.51.1" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.51.1.0" dbms="SQLITE" exact-version="3.51.1" exact-driver-version="3.51">
         <identifier-quote-string>&quot;</identifier-quote-string>
@@ -13,6 +13,11 @@
           <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
+    </data-source>
+    <data-source name="ITServiceDesk" uuid="354cb19a-eba9-480e-a541-0bb51a979653">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" />
+      <auth-provider>no-auth</auth-provider>
+      <schema-mapping />
     </data-source>
   </component>
 </project>

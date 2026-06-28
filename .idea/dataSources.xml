@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:sqlite:D:\projectKelompok\devOpsServiceDesk\src\main\resources\database\devOpsServiceDesk.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="ITServiceDesk" uuid="354cb19a-eba9-480e-a541-0bb51a979653">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/main/resources/database/ITServiceDesk.db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

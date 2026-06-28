@@ -13,6 +13,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +42,7 @@ public class TicketController implements Initializable {
     @FXML private Button btnRefresh;
     @FXML private VBox historyContainer;
     @FXML private VBox logContainer;
+    @FXML private ComboBox<String> navComboBox;
 
     private final TicketService ticketService = new TicketService();
     private final UserDao userDao = new UserDao();
@@ -49,6 +56,11 @@ public class TicketController implements Initializable {
         setupCreateTicket();
         btnRefresh.setOnAction(e -> refreshAll());
         txtSearch.textProperty().addListener((obs, old, val) -> loadQueue());
+        if (navComboBox != null) {
+            navComboBox.getItems().addAll("Tiket Dashboard", "User Direktori");
+            navComboBox.setValue("Tiket Dashboard");
+            navComboBox.setOnAction(e -> handleNavChange(e));
+        }
 
         refreshAll();
     }
@@ -471,5 +483,36 @@ public class TicketController implements Initializable {
 
     private String truncate(String text, int max) {
         return text.length() > max ? text.substring(0, max) + "…" : text;
+    }
+
+    @FXML
+    private void handleNavChange(ActionEvent event) {
+        String selectedMenu = navComboBox.getValue();
+        if (selectedMenu == null) return;
+
+        String fxmlFile = "";
+
+        if (selectedMenu.equals("User Direktori")) {
+            fxmlFile = "/layout_directory.fxml";
+        } else if (selectedMenu.equals("Tiket Dashboard")) {
+            fxmlFile = "/layout_dashboard.fxml";
+        }
+
+        if (!fxmlFile.isEmpty()) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                Parent root = loader.load();
+
+                // TAMBAHKAN DUA BARIS INI: Memanggil CSS secara manual
+                String cssPath = getClass().getResource("/css/styles.css").toExternalForm();
+                root.getStylesheets().add(cssPath);
+
+                Stage stage = (Stage) navComboBox.getScene().getWindow();
+                stage.setScene(new Scene(root));
+            } catch (Exception e) {
+                System.out.println("Gagal memuat halaman: " + fxmlFile);
+                e.printStackTrace();
+            }
+        }
     }
 }
