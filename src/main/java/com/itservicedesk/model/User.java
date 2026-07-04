@@ -9,6 +9,9 @@ public class User {
     private String fullName;
     private String username;
     private String email;
+    private String phone;
+    private String title;
+    private String assignedDevice;
     private String passwordHash;
     private String role;
     private String department;
@@ -23,11 +26,14 @@ public class User {
     }
 
     // Constructor untuk objek baru (registrasi)
-    public User(String fullName, String username, String email, String plainPassword, String role, String department) {
+    public User(String fullName, String username, String email, String phone, String title, String assignedDevice, String plainPassword, String role, String department) {
         this.employeeId = "EMP-" + UUID.randomUUID();
         this.fullName = fullName;
         this.username = username;
         this.email = email;  // ← perbaikan: email sekarang tersimpan
+        this.phone = phone;
+        this.title = title;
+        this.assignedDevice= assignedDevice;
         this.passwordHash = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
         this.role = role;
         this.department = department;
@@ -39,13 +45,16 @@ public class User {
     }
 
     // Constructor untuk load dari database (semua field) dipakai sama dao
-    public User(String employeeId, String fullName, String username, String email, String passwordHash,
+    public User(String employeeId, String fullName, String username, String email,String phone, String title, String assignedDevice, String passwordHash,
                 String role, String department, Boolean isActive, Boolean isLocked,
                 LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLoginAt) {
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.username = username;
         this.email = email;
+        this.phone = phone;
+        this.title = title;
+        this.assignedDevice= assignedDevice;
         this.passwordHash = passwordHash;
         this.role = role;
         this.department = department;
@@ -74,6 +83,15 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getAssignedDevice() { return assignedDevice; }
+    public void setAssignedDevice(String assignedDevice) { this.assignedDevice = assignedDevice; }
 
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }

@@ -13,8 +13,12 @@ public class UserDao {
 
     // ==================== CREATE ====================
     public boolean insertUser(User user) {
-        String sql = "INSERT INTO users (employee_id, full_name, username, email, password_hash, role, department, is_active, is_locked, created_at, updated_at, last_login_at) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+        INSERT INTO users (employee_id, full_name, username, email, phone, title,
+                           assigned_device, password_hash, role, department,
+                           is_active, is_locked, created_at, updated_at, last_login_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -23,18 +27,19 @@ public class UserDao {
             pstmt.setString(2, user.getFullName());
             pstmt.setString(3, user.getUsername());
             pstmt.setString(4, user.getEmail());
-            pstmt.setString(5, user.getPasswordHash());
-            pstmt.setString(6, user.getRole());
-            pstmt.setString(7, user.getDepartment());
-            pstmt.setBoolean(8, user.getIsActive());
-            pstmt.setBoolean(9, user.getIsLocked());
-            pstmt.setObject(10, user.getCreatedAt());
-            pstmt.setObject(11, user.getUpdatedAt());
-            pstmt.setObject(12, user.getLastLoginAt());
+            pstmt.setString(5, user.getPhone());
+            pstmt.setString(6, user.getTitle());
+            pstmt.setString(7, user.getAssignedDevice());
+            pstmt.setString(8, user.getPasswordHash());
+            pstmt.setString(9, user.getRole());
+            pstmt.setString(10, user.getDepartment());
+            pstmt.setBoolean(11, user.getIsActive());
+            pstmt.setBoolean(12, user.getIsLocked());
+            pstmt.setObject(13, user.getCreatedAt());
+            pstmt.setObject(14, user.getUpdatedAt());
+            pstmt.setObject(15, user.getLastLoginAt());
 
-            int affected = pstmt.executeUpdate();
-            return affected > 0;
-
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error insert user: " + e.getMessage());
             return false;
@@ -128,9 +133,13 @@ public class UserDao {
 
     // ==================== UPDATE ====================
     public boolean updateUser(User user) {
-        String sql = "UPDATE users SET full_name = ?, username = ?, email = ?, password_hash = ?, "
-                + "role = ?, department = ?, is_active = ?, is_locked = ?, updated_at = ?, last_login_at = ? "
-                + "WHERE employee_id = ?";
+        String sql = """
+        UPDATE users 
+        SET full_name = ?, username = ?, email = ?, phone = ?, title = ?, 
+            assigned_device = ?, password_hash = ?, role = ?, department = ?, 
+            is_active = ?, is_locked = ?, updated_at = ?, last_login_at = ? 
+        WHERE employee_id = ?
+    """;
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -138,18 +147,19 @@ public class UserDao {
             pstmt.setString(1, user.getFullName());
             pstmt.setString(2, user.getUsername());
             pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getPasswordHash());
-            pstmt.setString(5, user.getRole());
-            pstmt.setString(6, user.getDepartment());
-            pstmt.setBoolean(7, user.getIsActive());
-            pstmt.setBoolean(8, user.getIsLocked());
-            pstmt.setObject(9, LocalDateTime.now());
-            pstmt.setObject(10, user.getLastLoginAt());
-            pstmt.setString(11, user.getEmployeeId());
+            pstmt.setString(4, user.getPhone());
+            pstmt.setString(5, user.getTitle());
+            pstmt.setString(6, user.getAssignedDevice());
+            pstmt.setString(7, user.getPasswordHash());
+            pstmt.setString(8, user.getRole());
+            pstmt.setString(9, user.getDepartment());
+            pstmt.setBoolean(10, user.getIsActive());
+            pstmt.setBoolean(11, user.getIsLocked());
+            pstmt.setObject(12, LocalDateTime.now());
+            pstmt.setObject(13, user.getLastLoginAt());
+            pstmt.setString(14, user.getEmployeeId());
 
-            int affected = pstmt.executeUpdate();
-            return affected > 0;
-
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error update user: " + e.getMessage());
             return false;
@@ -243,6 +253,9 @@ public class UserDao {
         user.setFullName(rs.getString("full_name"));
         user.setUsername(rs.getString("username"));
         user.setEmail(rs.getString("email"));
+        user.setPhone(rs.getString("phone"));
+        user.setTitle(rs.getString("title"));
+        user.setAssignedDevice(rs.getString("assigned_device"));
         user.setPasswordHash(rs.getString("password_hash"));
         user.setRole(rs.getString("role"));
         user.setDepartment(rs.getString("department"));

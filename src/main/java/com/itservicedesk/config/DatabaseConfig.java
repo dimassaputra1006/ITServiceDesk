@@ -9,6 +9,11 @@ public class DatabaseConfig {
     private static final String URL = "jdbc:sqlite:src/main/resources/database/ITServiceDesk.db";
 
     public static Connection getConnection(){
+        java.io.File dbDir = new java.io.File("src/main/resources/database");
+        if (!dbDir.exists()) {
+            dbDir.mkdirs();
+            System.out.println("Folder database dibuat.");
+        }
         Connection conn = null;
         try{
             conn = DriverManager.getConnection(URL);
@@ -50,6 +55,9 @@ public class DatabaseConfig {
                     full_name TEXT,
                     username TEXT UNIQUE,
                     email TEXT,
+                    phone TEXT,
+                    title TEXT,
+                    assigned_device TEXT,
                     password_hash TEXT,
                     role TEXT,
                     department TEXT,

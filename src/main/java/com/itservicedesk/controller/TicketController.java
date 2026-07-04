@@ -56,12 +56,6 @@ public class TicketController implements Initializable {
         setupCreateTicket();
         btnRefresh.setOnAction(e -> refreshAll());
         txtSearch.textProperty().addListener((obs, old, val) -> loadQueue());
-        if (navComboBox != null) {
-            navComboBox.getItems().addAll("Tiket Dashboard", "User Direktori");
-            navComboBox.setValue("Tiket Dashboard");
-            navComboBox.setOnAction(e -> handleNavChange(e));
-        }
-
         refreshAll();
     }
 
@@ -486,33 +480,19 @@ public class TicketController implements Initializable {
     }
 
     @FXML
-    private void handleNavChange(ActionEvent event) {
-        String selectedMenu = navComboBox.getValue();
-        if (selectedMenu == null) return;
+    private void handleUserNav(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout_userDashboard.fxml"));
+            Parent root = loader.load();
 
-        String fxmlFile = "";
+            String cssPath = getClass().getResource("/css/styles.css").toExternalForm();
+            root.getStylesheets().add(cssPath);
 
-        if (selectedMenu.equals("User Direktori")) {
-            fxmlFile = "/layout_directory.fxml";
-        } else if (selectedMenu.equals("Tiket Dashboard")) {
-            fxmlFile = "/layout_dashboard.fxml";
-        }
-
-        if (!fxmlFile.isEmpty()) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-                Parent root = loader.load();
-
-                // TAMBAHKAN DUA BARIS INI: Memanggil CSS secara manual
-                String cssPath = getClass().getResource("/css/styles.css").toExternalForm();
-                root.getStylesheets().add(cssPath);
-
-                Stage stage = (Stage) navComboBox.getScene().getWindow();
-                stage.setScene(new Scene(root));
-            } catch (Exception e) {
-                System.out.println("Gagal memuat halaman: " + fxmlFile);
-                e.printStackTrace();
-            }
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Navigasi Gagal", "Gagal membuka User Directory");
         }
     }
 }

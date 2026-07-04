@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="768.0" prefWidth="1366.0" styleClass="workstation-root" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.TicketController">
+<BorderPane prefHeight="768.0" prefWidth="1366.0" styleClass="workstation-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.TicketController">
 
     <top>
         <VBox spacing="0">
@@ -22,7 +22,10 @@
                     <Insets bottom="10" left="20" right="20" top="10" />
                 </padding>
                 <children>
-               <ComboBox fx:id="navComboBox" onAction="#handleNavChange" prefHeight="40.0" prefWidth="158.0" promptText="TIKET DASHBOARD" style="-fx-font-weight: bold;" />
+                    <HBox spacing="10.0">
+                        <Button text="TICKET DASHBOARD" styleClass="nav-button" />
+                        <Button text="USER DIRECTORY" onAction="#handleUserNav" styleClass="nav-button" />
+                    </HBox>
 
                     <Region HBox.hgrow="ALWAYS" />
 

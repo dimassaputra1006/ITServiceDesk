@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
+<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
@@ -23,7 +13,10 @@
                 <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
             </padding>
             <children>
-                <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Direktori Karyawan" />
+                <HBox spacing="10.0">
+                    <Button onAction="#handleDashboardNav" styleClass="nav-button" text="TIKET DASHBOARD" />
+                    <Button styleClass="nav-button" text="USER DIRECTORY" />
+                </HBox>
                 <Region HBox.hgrow="ALWAYS" />
                 <TextField fx:id="searchField" prefWidth="250.0" promptText="Cari karyawan..." style="-fx-background-radius: 15;" />
                 <Button fx:id="btnAddUser" onAction="#handleAddUser" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 15;" text="+ Tambah User" />
@@ -39,8 +32,7 @@
             <children>
                 <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="nameCol" prefWidth="250.0" text="Nama Karyawan" />
-                        <TableColumn fx:id="roleCol" prefWidth="150.0" text="Jabatan" />
+                        <TableColumn fx:id="nameCol" prefWidth="400.0" text="Nama Karyawan" />
                     </columns>
                 </TableView>
             </children>
