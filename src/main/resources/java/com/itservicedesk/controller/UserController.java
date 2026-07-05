@@ -2,7 +2,6 @@ package com.itservicedesk.controller;
 
 import com.itservicedesk.dao.UserDao;
 import com.itservicedesk.model.User;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -122,24 +121,17 @@ public class UserController implements Initializable {
         System.out.println("Users loaded from DB: " + userList.size());
         userTable.setItems(filteredUsers);
 
-        // Deferred to the next pulse: selecting a row in the same tick as
-        // setItems(...) can leave the TableView still resolving the old
-        // (empty) items list internally — the row LOOKS highlighted, but
-        // getSelectedItem() comes back null, so the profile panel never
-        // gets populated.
-        Platform.runLater(() -> {
-            if (selectedId != null) {
-                filteredUsers.stream()
-                        .filter(user -> selectedId.equals(user.getEmployeeId()))
-                        .findFirst()
-                        .ifPresentOrElse(
-                                user -> userTable.getSelectionModel().select(user),
-                                this::selectFirstOrEmpty
-                        );
-            } else {
-                selectFirstOrEmpty();
-            }
-        });
+        if (selectedId != null) {
+            filteredUsers.stream()
+                    .filter(user -> selectedId.equals(user.getEmployeeId()))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            user -> userTable.getSelectionModel().select(user),
+                            () -> selectFirstOrEmpty()
+                    );
+        } else {
+            selectFirstOrEmpty();
+        }
     }
 
     private void selectFirstOrEmpty() {

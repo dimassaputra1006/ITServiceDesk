@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<BorderPane prefHeight="650" prefWidth="1000" styleClass="workstation-root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
+<BorderPane prefHeight="650" prefWidth="1000" styleClass="workstation-root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
 
     <top>
         <VBox spacing="0">
@@ -28,7 +28,7 @@
                 </HBox>
 
                 <!-- Toolbar row — search + primary action, mirrors ticket dashboard's toolbar -->
-                <HBox alignment="TOP_CENTER" spacing="12" styleClass="toolbar">
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="toolbar">
                     <padding>
                         <Insets bottom="8" left="20" right="20" top="8" />
                     </padding>
@@ -50,7 +50,7 @@
             <children>
                 <TableView fx:id="userTable" styleClass="user-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="nameCol" prefWidth="610.0000247955322" text="Employee Name" />
+                        <TableColumn fx:id="nameCol" prefWidth="400" text="Employee Name" />
                     </columns>
                 </TableView>
             </children>
@@ -100,15 +100,11 @@
                                     <Label styleClass="field-label" text="Employee ID" />
                                     <Label fx:id="lblProfileEmployeeId" styleClass="field-value" text="-" />
                                 </VBox>
-                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
                                     <Label styleClass="field-label" text="Phone" />
                                     <Label fx:id="lblProfilePhone" styleClass="field-value" text="-" />
                                 </VBox>
                             </children>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
                         </GridPane>
 
                         <Separator styleClass="profile-divider" />
@@ -132,15 +128,19 @@
                                     <Label styleClass="field-label" text="Department" />
                                     <ComboBox fx:id="cbProfileDept" editable="true" maxWidth="Infinity" styleClass="search-field" />
                                 </VBox>
-                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                     <Label styleClass="field-label" text="Account Status" />
                                     <Label fx:id="lblAccountStatus" styleClass="field-value" text="-" />
                                 </VBox>
+                                <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label styleClass="field-label" text="Last Login" />
+                                    <Label fx:id="lblProfileLastLogin" styleClass="field-value" text="-" />
+                                </VBox>
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                                    <Label styleClass="field-label" text="Member Since" />
+                                    <Label fx:id="lblProfileCreatedAt" styleClass="field-value" text="-" />
+                                </VBox>
                             </children>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
                         </GridPane>
 
                         <Separator styleClass="profile-divider" />
