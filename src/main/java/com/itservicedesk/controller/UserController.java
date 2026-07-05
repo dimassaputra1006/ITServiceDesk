@@ -535,7 +535,9 @@ public class UserController implements Initializable {
         confirm.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
                 String deletedId = selectedUser.getEmployeeId();
+                String avatarPath = selectedUser.getAvatarPath();
                 if (userDao.deleteUser(deletedId)) {
+                    deleteAvatarFileIfManaged(avatarPath);
                     selectedUser = null;
                     loadUserData();
                     showAlert("Success", "User deleted successfully.");
@@ -544,6 +546,30 @@ public class UserController implements Initializable {
                 }
             }
         });
+    }
+
+    /**
+     * Deletes the user's uploaded photo from app storage after their account
+     * is removed, so orphaned files don't keep piling up in the avatars
+     * folder. Only ever deletes files that actually live inside our managed
+     * storage directory — never touches a path outside it, in case
+     * avatarPath happens to point somewhere else.
+     */
+    private void deleteAvatarFileIfManaged(String avatarPath) {
+        if (avatarPath == null || avatarPath.isBlank()) {
+            return;
+        }
+        try {
+            File avatarFile = new File(avatarPath).getCanonicalFile();
+            File storageDir = new File(AVATAR_STORAGE_DIR).getCanonicalFile();
+            if (avatarFile.getPath().startsWith(storageDir.getPath()) && avatarFile.exists()) {
+                if (!avatarFile.delete()) {
+                    System.err.println("Could not delete avatar file: " + avatarFile.getAbsolutePath());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error while cleaning up avatar file: " + e.getMessage());
+        }
     }
 
     private void reloadSelectedUser() {

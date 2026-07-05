@@ -3,7 +3,6 @@ package com.itservicedesk.config;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -26,6 +25,13 @@ public class DatabaseConfig {
         return conn;
     }
 
+    /**
+     * Deletes the existing database file, if any.
+     * Use this only when the schema changes (columns added/removed) — SQLite's
+     * "CREATE TABLE IF NOT EXISTS" will NOT add new columns to a file that
+     * already exists, so the old file must be removed before createTables()
+     * can rebuild it with the new schema. This wipes all data.
+     */
     public static void resetDatabase() {
         File dbFile = new File(DB_PATH);
         if (dbFile.exists()) {
@@ -41,7 +47,6 @@ public class DatabaseConfig {
         createTablesTickets();
         createTablesUsers();
         createTableActivityLog();
-        migrateSchema();
     }
 
     public static void createTablesTickets() {
@@ -99,42 +104,6 @@ public class DatabaseConfig {
                 );
                 """;
         executeUpdate(sql, "Table activity_log");
-    }
-
-    /**
-     * Adds columns introduced after the first MVP schema.
-     * SQLite's CREATE TABLE IF NOT EXISTS does not alter existing files.
-     */
-    public static void migrateSchema() {
-        addColumnIfMissing("users", "phone", "TEXT");
-        addColumnIfMissing("users", "title", "TEXT");
-        addColumnIfMissing("users", "assigned_device", "TEXT");
-        addColumnIfMissing("users", "avatar_path", "TEXT");
-    }
-
-    private static void addColumnIfMissing(String table, String column, String definition) {
-        if (hasColumn(table, column)) {
-            return;
-        }
-
-        String sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition;
-        executeUpdate(sql, "Column " + table + "." + column);
-    }
-
-    private static boolean hasColumn(String table, String column) {
-        String sql = "PRAGMA table_info(" + table + ")";
-        try (Connection conn = getConnection();
-             Statement statement = conn.createStatement();
-             ResultSet rs = statement.executeQuery(sql)) {
-            while (rs.next()) {
-                if (column.equalsIgnoreCase(rs.getString("name"))) {
-                    return true;
-                }
-            }
-        } catch (SQLException e) {
-            System.err.printf("Failed to inspect column %s.%s: %s%n", table, column, e.getMessage());
-        }
-        return false;
     }
 
     public static void executeUpdate(String sql, String tableName) {
