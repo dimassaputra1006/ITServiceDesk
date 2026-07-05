@@ -5,34 +5,52 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<BorderPane prefHeight="650.0" prefWidth="1000.0" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
+<BorderPane prefHeight="650" prefWidth="1000" styleClass="workstation-root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
-            </padding>
+        <VBox spacing="0">
             <children>
-                <HBox spacing="10.0">
-                    <Button onAction="#handleDashboardNav" styleClass="nav-button" text="TIKET DASHBOARD" />
-                    <Button styleClass="nav-button" text="USER DIRECTORY" />
+                <!-- Top nav bar — same role as status-bar on the ticket dashboard -->
+                <HBox alignment="CENTER_LEFT" spacing="20" styleClass="status-bar">
+                    <padding>
+                        <Insets bottom="10" left="20" right="20" top="10" />
+                    </padding>
+                    <children>
+                        <HBox spacing="10">
+                            <Button onAction="#handleDashboardNav" styleClass="nav-button" text="TICKET DASHBOARD" />
+                            <Button styleClass="nav-button, nav-button-active" text="USER DIRECTORY" />
+                        </HBox>
+                    </children>
+                    <VBox alignment="CENTER_RIGHT" spacing="2">
+                        <Label fx:id="lblAnalystName" styleClass="analyst-name" text="ANALYST: ---" />
+                        <Label fx:id="lblShiftStatus" styleClass="analyst-status" text="STATUS: ON SHIFT" />
+                    </VBox>
                 </HBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <TextField fx:id="searchField" prefWidth="250.0" promptText="Cari karyawan..." style="-fx-background-radius: 15;" />
-                <Button fx:id="btnAddUser" onAction="#handleAddUser" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-background-radius: 15;" text="+ Tambah User" />
+
+                <!-- Toolbar row — search + primary action, mirrors ticket dashboard's toolbar -->
+                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="toolbar">
+                    <padding>
+                        <Insets bottom="8" left="20" right="20" top="8" />
+                    </padding>
+                    <children>
+                        <TextField fx:id="searchField" prefWidth="250" promptText="Search employee..." styleClass="search-field" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnAddUser" onAction="#handleAddUser" styleClass="toolbar-button, toolbar-button-primary" text="+ ADD USER" />
+                    </children>
+                </HBox>
             </children>
-        </HBox>
+        </VBox>
     </top>
 
     <center>
-        <VBox BorderPane.alignment="CENTER">
+        <VBox styleClass="panel, directory-panel">
             <padding>
-                <Insets bottom="20.0" left="20.0" right="10.0" top="15.0" />
+                <Insets bottom="16" left="16" right="16" top="16" />
             </padding>
             <children>
-                <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
+                <TableView fx:id="userTable" styleClass="user-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="nameCol" prefWidth="400.0" text="Nama Karyawan" />
+                        <TableColumn fx:id="nameCol" prefWidth="400" text="Employee Name" />
                     </columns>
                 </TableView>
             </children>
@@ -40,52 +58,44 @@
     </center>
 
     <right>
-        <VBox alignment="TOP_CENTER" prefWidth="350.0" spacing="15.0" style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 0 1;" BorderPane.alignment="CENTER">
+        <VBox alignment="TOP_CENTER" prefWidth="350" spacing="16" styleClass="panel, profile-panel">
             <padding>
-                <Insets bottom="20.0" top="30.0" />
+                <Insets bottom="24" left="16" right="16" top="24" />
             </padding>
             <children>
-                <Circle fill="#e0e0e0" radius="50.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                <Label fx:id="lblProfileName" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Pilih Karyawan" />
+                <Circle fx:id="profileAvatar" radius="50" strokeType="INSIDE" styleClass="avatar-placeholder" />
+                <Label fx:id="lblProfileName" styleClass="profile-name" text="Select Employee" />
 
-                <TabPane prefHeight="400.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                <TabPane prefHeight="400" styleClass="profile-tabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <tabs>
-                        <Tab text="Tentang &amp; Departemen">
+                        <Tab text="About &amp; Department">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0">
+                                <VBox spacing="8" styleClass="tab-content">
                                     <children>
-                                        <VBox layoutX="20.0" layoutY="20.0" prefHeight="175.0" prefWidth="153.0" spacing="10.0">
-                                            <children>
-                                                <Label style="-fx-font-weight: bold;" text="Departemen:" />
-                                                <Label fx:id="lblProfileDept" text="-" />
-                                                <Label style="-fx-font-weight: bold;" text="Email:" />
-                                                <Label fx:id="lblProfileEmail" text="-" />
-                                    <Label style="-fx-font-weight: bold;" text="Phone:" />
-                                    <Label fx:id="lblProfilePhone" text="-" />
-                                            </children>
-                                        </VBox>
+                                        <Label styleClass="field-label" text="Department:" />
+                                        <Label fx:id="lblProfileDept" styleClass="field-value" text="-" />
+                                        <Label styleClass="field-label" text="Email:" />
+                                        <Label fx:id="lblProfileEmail" styleClass="field-value" text="-" />
+                                        <Label styleClass="field-label" text="Phone:" />
+                                        <Label fx:id="lblProfilePhone" styleClass="field-value" text="-" />
                                     </children>
-                                </AnchorPane>
+                                </VBox>
                             </content>
                         </Tab>
 
-                        <Tab text="Perangkat Aktif">
+                        <Tab text="Active Devices">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0">
+                                <VBox spacing="8" styleClass="tab-content">
                                     <children>
-                                        <VBox layoutX="20.0" layoutY="20.0" prefHeight="46.0" prefWidth="318.0" spacing="10.0">
-                                            <children>
-                                                <Label style="-fx-font-weight: bold;" text="Laptop / PC:" />
-                                                <Label fx:id="lblProfileDevice" text="Belum ada data." wrapText="true" />
-                                            </children>
-                                        </VBox>
+                                        <Label styleClass="field-label" text="Laptop / PC:" />
+                                        <Label fx:id="lblProfileDevice" styleClass="field-value" text="No data yet." wrapText="true" />
                                     </children>
-                                </AnchorPane>
+                                </VBox>
                             </content>
                         </Tab>
                     </tabs>
                     <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="8" />
                     </VBox.margin>
                 </TabPane>
             </children>

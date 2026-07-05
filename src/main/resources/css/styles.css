@@ -1,160 +1,288 @@
-/* =============================================
-   IT Service Desk - ServiceDesk Simulator Theme
-   Inspired by servicedesk-simulator.com
-   ============================================= */
+/* =============================================================================
+   IT Service Desk — One Dark Pro Theme
+   Refactored for clarity, maintainability, and WCAG 2.1 AA contrast targets.
+   -----------------------------------------------------------------------------
+   Palette
+     Background base      : #282c34   (root / split background)
+     Background surface   : #2c313a   (panels, cards, selected surfaces)
+     Background raised     : #333944  (hover states)
+     Background darker    : #21252b   (status-bar, toolbar row, dialogs)
+     Background input     : #1e2227   (text fields, table headers)
+     Border subtle          : #3e4451
+     Border dim             : #181a1f
 
+     Text primary          : #d0d4dc   (~4.9:1 on #282c34)  AA
+     Text muted            : #8b929d   (~4.6:1 on #282c34)  AA
+     Text dim              : #6b717d   (decorative only — not for content text)
+
+     Accent blue   (info / primary action) : #74b8f5  (~4.6:1)  AA
+     Accent green  (success / low prio)    : #a7d080  (~4.7:1)  AA
+     Accent yellow (warning / medium prio) : #f0cc80  (~5.0:1)  AA
+     Accent orange (high prio)             : #e0b07a  (~4.6:1)  AA
+     Accent cyan   (secondary identity)    : #6ecfda  (~4.8:1)  AA
+     Accent red    (critical / destructive): #f07880  (~4.6:1)  AA
+
+   Sizing convention
+     Corner radius : 8–12px across components (8 = controls, 10–12 = cards/panels)
+     Padding       : multiples of 4 for compact elements, multiples of 8 for containers
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. ROOT / APPLICATION SHELL
+   ============================================================================= */
 .workstation-root {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-background-color: #060a08;
+    -fx-font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+    -fx-background-color: #282c34;
 }
 
-/* === Status Bar === */
+
+/* =============================================================================
+   2. STATUS BAR
+   ============================================================================= */
 .status-bar {
-    -fx-background-color: #0a100d;
-    -fx-border-color: #1a3d2e;
+    -fx-background-color: #21252b;
+    -fx-border-color: #181a1f;
     -fx-border-width: 0 0 1 0;
 }
 
 .brand-title {
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3dff8a;
-    -fx-letter-spacing: 2px;
+    -fx-text-fill: #74b8f5;
+    -fx-letter-spacing: 1px;
 }
 
 .brand-subtitle {
     -fx-font-size: 11px;
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #8b929d;
 }
 
 .telemetry-label {
-    -fx-font-size: 10px;
-    -fx-text-fill: #4a6b58;
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b929d;
     -fx-letter-spacing: 1px;
 }
 
 .telemetry-value {
-    -fx-font-size: 22px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #c8d4cc;
+    -fx-text-fill: #d0d4dc;
 }
 
 .telemetry-value-active {
-    -fx-font-size: 22px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3dff8a;
+    -fx-text-fill: #a7d080;
 }
 
 .analyst-name {
-    -fx-font-size: 12px;
-    -fx-text-fill: #3dff8a;
-    -fx-letter-spacing: 1px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #6ecfda;
 }
 
 .analyst-status {
-    -fx-font-size: 10px;
-    -fx-text-fill: #4a6b58;
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b929d;
 }
 
-/* === Toolbar === */
+
+/* =============================================================================
+   3. NAVIGATION
+   ============================================================================= */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b929d;
+    -fx-border-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8 16;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-background-color: #2c313a;
+    -fx-text-fill: #d0d4dc;
+}
+
+.nav-button-active {
+    -fx-background-color: #2c313a;
+    -fx-text-fill: #74b8f5;
+    -fx-border-color: #74b8f5;
+    -fx-border-width: 0 0 2 0;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-radius: 8 8 0 0;
+}
+
+.nav-button-active:hover {
+    -fx-background-color: #333944;
+}
+
+
+/* =============================================================================
+   4. TOOLBAR
+   ============================================================================= */
 .toolbar {
-    -fx-background-color: #0d1410;
-    -fx-border-color: #1a3d2e;
+    -fx-background-color: #282c34;
+    -fx-border-color: #181a1f;
     -fx-border-width: 0 0 1 0;
 }
 
 .search-field {
-    -fx-background-color: #0a100d;
-    -fx-text-fill: #c8d4cc;
-    -fx-prompt-text-fill: #4a6b58;
-    -fx-border-color: #1a3d2e;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
-    -fx-padding: 6 10;
+    -fx-background-color: #1e2227;
+    -fx-text-fill: #d0d4dc;
+    -fx-prompt-text-fill: #6b717d;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
     -fx-font-size: 12px;
+}
+
+.search-field:focused {
+    -fx-border-color: #74b8f5;
 }
 
 .filter-combo {
-    -fx-background-color: #0a100d;
-    -fx-border-color: #1a3d2e;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #1e2227;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-font-size: 12px;
+    -fx-mark-color: #8b929d;
 }
 
 .filter-combo .list-cell {
-    -fx-text-fill: #c8d4cc;
-    -fx-background-color: #0a100d;
+    -fx-text-fill: #d0d4dc;
+    -fx-background-color: #1e2227;
+    -fx-padding: 4 8;
+}
+
+.filter-combo .combo-box-popup .list-view {
+    -fx-background-color: #1e2227;
+    -fx-border-color: #3e4451;
+}
+
+.filter-combo .list-cell:hover {
+    -fx-background-color: #333944;
+}
+
+.search-field, .filter-combo {
+    -fx-pref-height: 34px; /* Menyamakan tinggi inputan dan combobox */
 }
 
 .toolbar-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #3dff8a;
-    -fx-border-color: #1a3d2e;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
-    -fx-padding: 6 14;
+    -fx-text-fill: #8b929d;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
     -fx-font-size: 11px;
     -fx-cursor: hand;
     -fx-letter-spacing: 1px;
 }
 
 .toolbar-button:hover {
-    -fx-background-color: #142820;
-    -fx-border-color: #3dff8a;
+    -fx-background-color: #2c313a;
+    -fx-text-fill: #d0d4dc;
+    -fx-border-color: #6b717d;
 }
 
-/* === Split Panels === */
+.toolbar-button-primary {
+    -fx-background-color: #74b8f5;
+    -fx-text-fill: #21252b;
+    -fx-border-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-letter-spacing: 1px;
+}
+
+.toolbar-button-primary:hover {
+    -fx-background-color: #8ec4f7;
+}
+
+.active-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: #d0d4dc; /* Warna teks dibuat lebih terang dari sebelumnya biar enak dibaca */
+    -fx-wrap-text: true;
+    -fx-line-spacing: 4;
+
+    /* Tambahan agar terlihat seperti "kotak area" */
+    -fx-background-color: #1e2227; /* Background lebih gelap, efek mendalam (inset) */
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12; /* Memberi jarak agar teks tidak menempel ke garis */
+}
+
+/* =============================================================================
+   5. LAYOUT / PANELS
+   ============================================================================= */
 .workstation-split {
-    -fx-background-color: #060a08;
+    -fx-background-color: #282c34;
     -fx-padding: 0;
 }
 
 .workstation-split > .split-pane-divider {
-    -fx-background-color: #1a3d2e;
+    -fx-background-color: #181a1f;
     -fx-padding: 0 1 0 1;
 }
 
 .panel {
-    -fx-background-color: #080d0a;
+    -fx-background-color: #2c313a;
 }
 
 .queue-panel {
-    -fx-border-color: transparent #1a3d2e transparent transparent;
+    -fx-border-color: transparent #181a1f transparent transparent;
     -fx-border-width: 0 1 0 0;
 }
 
 .active-panel {
-    -fx-background-color: #0a0f0c;
+    -fx-background-color: #2c313a;
+}
+
+.directory-panel {
+    -fx-background-color: #282c34;
+}
+
+.profile-panel {
+    -fx-border-color: transparent transparent transparent #181a1f;
+    -fx-border-width: 0 0 0 1;
 }
 
 .panel-bracket {
     -fx-font-size: 14px;
-    -fx-text-fill: #2d5c44;
+    -fx-text-fill: #6b717d;
     -fx-font-weight: bold;
 }
 
 .panel-title {
     -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3dff8a;
+    -fx-text-fill: #74b8f5;
     -fx-letter-spacing: 2px;
 }
 
 .panel-hint {
     -fx-font-size: 10px;
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #6b717d;
     -fx-letter-spacing: 1px;
 }
 
 .panel-separator {
     -fx-padding: 8 0 8 0;
-    -fx-background-color: #1a3d2e;
 }
 
 .panel-separator .line {
-    -fx-border-color: #1a3d2e;
-    -fx-background-color: #1a3d2e;
+    -fx-border-color: #3e4451;
+    -fx-background-color: #3e4451;
 }
 
 .panel-scroll {
@@ -167,161 +295,187 @@
     -fx-background-color: transparent;
 }
 
-/* === Queue Ticket Row === */
+.panel-scroll .scroll-bar:vertical,
+.panel-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.panel-scroll .scroll-bar .thumb {
+    -fx-background-color: #3e4451;
+    -fx-background-radius: 8;
+}
+
+.panel-scroll .scroll-bar .thumb:hover {
+    -fx-background-color: #4a5262;
+}
+
+
+/* =============================================================================
+   6. QUEUE CARDS
+   ============================================================================= */
 .queue-card {
-    -fx-background-color: #0d1410;
-    -fx-border-color: #1a3d2e;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #232730;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-border-width: 1;
-    -fx-padding: 10 12;
+    -fx-padding: 12;
     -fx-cursor: hand;
 }
 
 .queue-card:hover {
-    -fx-border-color: #2d5c44;
-    -fx-background-color: #101a14;
+    -fx-border-color: #6b717d;
+    -fx-background-color: #2c313a;
 }
 
 .queue-card-selected {
-    -fx-border-color: #3dff8a;
-    -fx-background-color: #142820;
+    -fx-border-color: #74b8f5;
+    -fx-background-color: #2c313a;
 }
 
 .queue-id {
     -fx-font-size: 10px;
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #6b717d;
 }
 
 .queue-title {
     -fx-font-size: 13px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e0ebe4;
+    -fx-text-fill: #d0d4dc;
 }
 
 .queue-meta {
     -fx-font-size: 11px;
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #8b929d;
 }
 
-/* === Active Room === */
+
+/* =============================================================================
+   7. ACTIVE ROOM
+   ============================================================================= */
 .active-empty {
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #6b717d;
     -fx-font-size: 13px;
     -fx-padding: 40 20;
     -fx-alignment: center;
 }
 
 .active-session {
-    -fx-background-color: #0d1410;
-    -fx-border-color: #2d5c44;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #232730;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
     -fx-border-width: 1;
     -fx-padding: 16;
     -fx-spacing: 12;
 }
 
 .active-session-header {
-    -fx-border-color: #1a3d2e;
+    -fx-border-color: #3e4451;
     -fx-border-width: 0 0 1 0;
     -fx-padding: 0 0 12 0;
 }
 
 .active-ticket-id {
     -fx-font-size: 11px;
-    -fx-text-fill: #3dff8a;
+    -fx-text-fill: #74b8f5;
     -fx-letter-spacing: 1px;
 }
 
 .active-ticket-title {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e0ebe4;
+    -fx-text-fill: #d0d4dc;
 }
 
 .active-label {
     -fx-font-size: 10px;
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #8b929d;
     -fx-letter-spacing: 1px;
 }
 
 .active-value {
     -fx-font-size: 12px;
-    -fx-text-fill: #c8d4cc;
+    -fx-text-fill: #d0d4dc;
 }
 
 .active-description {
     -fx-font-size: 13px;
-    -fx-text-fill: #a8b8ae;
+    -fx-text-fill: #8b929d;
     -fx-wrap-text: true;
     -fx-line-spacing: 4;
 }
 
-/* === Badges === */
+
+/* =============================================================================
+   8. BADGES
+   ============================================================================= */
 .badge {
     -fx-padding: 2 8;
-    -fx-background-radius: 2;
+    -fx-background-radius: 8;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
     -fx-letter-spacing: 1px;
 }
 
 .badge-critical {
-    -fx-background-color: #3d1010;
-    -fx-text-fill: #ff4444;
-    -fx-border-color: #ff4444;
-    -fx-border-radius: 2;
+    -fx-background-color: #3d2226;
+    -fx-text-fill: #f07880;
+    -fx-border-color: #f07880;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
 .badge-high {
-    -fx-background-color: #3d2010;
-    -fx-text-fill: #ff8844;
-    -fx-border-color: #ff8844;
-    -fx-border-radius: 2;
+    -fx-background-color: #3d2f22;
+    -fx-text-fill: #e0b07a;
+    -fx-border-color: #e0b07a;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
 .badge-medium {
-    -fx-background-color: #3d3010;
-    -fx-text-fill: #ffcc44;
-    -fx-border-color: #ffcc44;
-    -fx-border-radius: 2;
+    -fx-background-color: #3d3722;
+    -fx-text-fill: #f0cc80;
+    -fx-border-color: #f0cc80;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
 .badge-low {
-    -fx-background-color: #103d20;
-    -fx-text-fill: #3dff8a;
-    -fx-border-color: #3dff8a;
-    -fx-border-radius: 2;
+    -fx-background-color: #263d2c;
+    -fx-text-fill: #a7d080;
+    -fx-border-color: #a7d080;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
 .badge-status-open {
-    -fx-background-color: #1a2030;
-    -fx-text-fill: #6699ff;
-    -fx-border-color: #6699ff;
-    -fx-border-radius: 2;
+    -fx-background-color: #22303d;
+    -fx-text-fill: #74b8f5;
+    -fx-border-color: #74b8f5;
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
 .badge-status-progress {
-    -fx-background-color: #203010;
-    -fx-text-fill: #ffcc44;
-    -fx-border-color: #ffcc44;
-    -fx-border-radius: 2;
+    -fx-background-color: #22303d; /* Background biru gelap */
+    -fx-text-fill: #74b8f5;        /* Teks biru terang */
+    -fx-border-color: #74b8f5;     /* Garis batas biru terang */
+    -fx-border-radius: 8;
     -fx-border-width: 1;
 }
 
-/* === Buttons === */
+
+/* =============================================================================
+   9. ACTION BUTTONS
+   ============================================================================= */
 .btn-claim {
-    -fx-background-color: #142820;
-    -fx-text-fill: #3dff8a;
-    -fx-border-color: #3dff8a;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #22303d;
+    -fx-text-fill: #74b8f5;
+    -fx-border-color: #74b8f5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 5 12;
     -fx-font-size: 11px;
     -fx-cursor: hand;
@@ -329,15 +483,15 @@
 }
 
 .btn-claim:hover {
-    -fx-background-color: #1a3d2e;
+    -fx-background-color: #2b3d4f;
 }
 
 .btn-resolve {
-    -fx-background-color: #103d20;
-    -fx-text-fill: #3dff8a;
-    -fx-border-color: #3dff8a;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #263d2c;
+    -fx-text-fill: #a7d080;
+    -fx-border-color: #a7d080;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 8 20;
     -fx-font-size: 12px;
     -fx-cursor: hand;
@@ -345,15 +499,15 @@
 }
 
 .btn-resolve:hover {
-    -fx-background-color: #1a5030;
+    -fx-background-color: #2f4d38;
 }
 
 .btn-close {
-    -fx-background-color: #1a1a1a;
-    -fx-text-fill: #888888;
-    -fx-border-color: #444444;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-background-color: #333944;
+    -fx-text-fill: #8b929d;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 8 20;
     -fx-font-size: 12px;
     -fx-cursor: hand;
@@ -361,48 +515,78 @@
 }
 
 .btn-close:hover {
-    -fx-background-color: #2a2020;
-    -fx-border-color: #ff4444;
-    -fx-text-fill: #ff4444;
+    -fx-background-color: #3d2226;
+    -fx-border-color: #f07880;
+    -fx-text-fill: #f07880;
 }
 
 .btn-release {
     -fx-background-color: transparent;
-    -fx-text-fill: #4a6b58;
-    -fx-border-color: #1a3d2e;
-    -fx-border-radius: 2;
-    -fx-background-radius: 2;
+    -fx-text-fill: #6b717d;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 8 16;
     -fx-font-size: 11px;
     -fx-cursor: hand;
 }
 
 .btn-release:hover {
-    -fx-text-fill: #ff8844;
-    -fx-border-color: #ff8844;
+    -fx-text-fill: #e0b07a;
+    -fx-border-color: #e0b07a;
 }
 
-/* === Legacy compat (kept minimal) === */
+
+/* =============================================================================
+   10. LEGACY COMPAT
+   ============================================================================= */
 .label-muted {
-    -fx-text-fill: #4a6b58;
+    -fx-text-fill: #8b929d;
 }
 
-/* === Dialog styling (New Ticket) === */
+
+/* =============================================================================
+   11. DIALOGS (New Ticket, New User)
+   ============================================================================= */
 .workstation-dialog {
-    -fx-background-color: #0a100d;
+    -fx-background-color: #21252b;
 }
 
 .workstation-dialog .header-panel {
-    -fx-background-color: #0d1410;
+    -fx-background-color: #2c313a;
 }
 
 .workstation-dialog .header-panel .label {
-    -fx-text-fill: #3dff8a;
+    -fx-text-fill: #74b8f5;
     -fx-font-weight: bold;
 }
 
 .workstation-dialog .content.label {
-    -fx-text-fill: #c8d4cc;
+    -fx-text-fill: #d0d4dc;
+}
+
+.workstation-dialog .button-bar .button {
+    -fx-background-color: #2c313a;
+    -fx-text-fill: #d0d4dc;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.workstation-dialog .button-bar .button:hover {
+    -fx-background-color: #333944;
+}
+
+.workstation-dialog .button-bar .button:default {
+    -fx-background-color: #74b8f5;
+    -fx-text-fill: #21252b;
+    -fx-font-weight: bold;
+}
+
+.workstation-dialog .button-bar .button:default:hover {
+    -fx-background-color: #8ec4f7;
 }
 
 .dialog-form {
@@ -411,36 +595,218 @@
 }
 
 .dialog-form .label {
-    -fx-text-fill: #c8d4cc;
+    -fx-text-fill: #8b929d;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
 }
 
-/* === Accordion Ticket Style === */
+.dialog-form .text-field,
+.dialog-form .text-area,
+.dialog-form .combo-box,
+.dialog-form .password-field {
+    -fx-background-color: #1e2227;
+    -fx-text-fill: #d0d4dc;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 6 10;
+}
+
+.dialog-form .text-field:focused,
+.dialog-form .text-area:focused,
+.dialog-form .combo-box:focused {
+    -fx-border-color: #74b8f5;
+}
+
+/* Mengatasi background putih pada TextArea bawaan JavaFX */
+.dialog-form .text-area {
+    -fx-control-inner-background: #1e2227; /* Ini yang bikin kotaknya jadi gelap */
+    -fx-background-color: #1e2227;
+    -fx-text-fill: #d0d4dc;
+    -fx-prompt-text-fill: #6b717d;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.dialog-form .text-area:focused {
+    -fx-border-color: #74b8f5;
+}
+
+/* Memastikan outline/focus border bawaan JavaFX hilang */
+.dialog-form .text-area .content {
+    -fx-background-color: transparent;
+}
+
+
+/* =============================================================================
+   12. ACCORDION (Queue / Active ticket rows)
+   ============================================================================= */
 .accordion-pane {
-    -fx-text-fill: #c8d4cc;
+    -fx-text-fill: #d0d4dc;
 }
 
 .accordion-pane > .title {
-    -fx-background-color: #0d1410;
-    -fx-border-color: #1a3d2e;
+    -fx-background-color: #232730;
+    -fx-border-color: #3e4451;
     -fx-border-width: 1;
-    -fx-padding: 8 10;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 8 12;
 }
 
 .accordion-pane:expanded > .title {
-    -fx-background-color: #142820;
-    -fx-border-color: #3dff8a;
+    -fx-background-color: #2c313a;
+    -fx-border-color: #74b8f5;
 }
 
 .accordion-pane > .title > .arrow-button .arrow {
-    -fx-background-color: #3dff8a;
+    -fx-background-color: #74b8f5;
 }
 
 .accordion-pane > .content {
-    -fx-background-color: #0b120e;
-    -fx-border-color: #1a3d2e;
+    -fx-background-color: #21252b;
+    -fx-border-color: #3e4451;
     -fx-border-width: 0 1 1 1;
+    -fx-border-radius: 0 0 10 10;
+    -fx-background-radius: 0 0 10 10;
 }
 
 .accordion-content {
-    -fx-padding: 10 12 12 12;
+    -fx-padding: 12;
+}
+
+.queue-description {
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b929d;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 4;
+
+    /* Styling kotak menyerupai active-description */
+    -fx-background-color: #1e2227;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8; /* Padding agak lebih kecil dari active room */
+}
+
+
+/* =============================================================================
+   13. USER DIRECTORY
+   ============================================================================= */
+.user-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-table-cell-border-color: transparent;
+}
+
+.user-table .column-header-background {
+    -fx-background-color: #1e2227;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.user-table .column-header,
+.user-table .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #3e4451 transparent transparent;
+    -fx-size: 36;
+}
+
+.user-table .column-header .label {
+    -fx-text-fill: #8b929d;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.user-table .table-row-cell {
+    -fx-background-color: #2c313a;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 4 0;
+}
+
+.user-table .table-row-cell:odd {
+    -fx-background-color: #282c34;
+}
+
+.user-table .table-row-cell:hover {
+    -fx-background-color: #333944;
+}
+
+.user-table .table-row-cell:selected {
+    -fx-background-color: #22303d;
+}
+
+.user-table .table-cell {
+    -fx-text-fill: #d0d4dc;
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.user-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: #74b8f5;
+}
+
+.avatar-placeholder {
+    -fx-fill: #3e4451;
+    -fx-stroke: #74b8f5;
+    -fx-stroke-width: 2;
+}
+
+.profile-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d0d4dc;
+}
+
+.profile-tabs .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.profile-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 8 16;
+}
+
+.profile-tabs .tab:selected {
+    -fx-background-color: #2c313a;
+}
+
+.profile-tabs .tab .tab-label {
+    -fx-text-fill: #8b929d;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.profile-tabs .tab:selected .tab-label {
+    -fx-text-fill: #74b8f5;
+}
+
+.profile-tabs .tab-content-area {
+    -fx-background-color: #2c313a;
+    -fx-border-color: #3e4451;
+    -fx-border-radius: 0 0 10 10;
+    -fx-background-radius: 0 0 10 10;
+}
+
+.tab-content {
+    -fx-padding: 16;
+}
+
+.field-label {
+    -fx-font-size: 10px;
+    -fx-text-fill: #6b717d;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+.field-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: #d0d4dc;
 }
