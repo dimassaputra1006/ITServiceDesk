@@ -18,7 +18,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -67,38 +66,11 @@ public class TicketController implements Initializable {
 
     private void setupAnalystSelector() {
         List<User> analysts = userDao.getActiveItStaff();
-        if (analysts.isEmpty()) {
-            currentAnalyst = userDao.findByUsername("ahmad.fauzi");
-            if (currentAnalyst != null) {
-                cbAnalyst.getItems().add(currentAnalyst);
-                cbAnalyst.setValue(currentAnalyst);
-            }
-        } else {
-            cbAnalyst.getItems().addAll(analysts);
+        if (!analysts.isEmpty()) {
             currentAnalyst = analysts.get(0);
-            cbAnalyst.setValue(currentAnalyst);
+        } else {
+            currentAnalyst = userDao.findByUsername("ahmad.fauzi");
         }
-
-        cbAnalyst.setCellFactory(list -> new ListCell<>() {
-            @Override
-            protected void updateItem(User item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.getFullName() + " (" + item.getDepartment() + ")");
-            }
-        });
-        cbAnalyst.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(User item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "Select Analyst" : item.getFullName());
-            }
-        });
-
-        cbAnalyst.valueProperty().addListener((obs, oldVal, newVal) -> {
-            currentAnalyst = newVal;
-            lblAnalystName.setText("ANALYST: " + (newVal != null ? newVal.getFullName().toUpperCase() : "---"));
-            refreshAll();
-        });
 
         if (currentAnalyst != null) {
             lblAnalystName.setText("ANALYST: " + currentAnalyst.getFullName().toUpperCase());
@@ -214,15 +186,20 @@ public class TicketController implements Initializable {
         Label idLabel = new Label(shortId(ticket.getTicketId()));
         idLabel.getStyleClass().add("queue-id");
 
-        Label badge = createPriorityBadge(ticket.getPriority());
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+        topRow.getChildren().addAll(idLabel, spacer);
 
-        topRow.getChildren().addAll(idLabel, badge, spacer);
+        /// Bagian Incident Report & Deskripsi di Queue Card
+        Label titleLabel = new Label("INCIDENT REPORT");
+        titleLabel.getStyleClass().add("active-label");
 
-        Label title = new Label(ticket.getTitle());
-        title.getStyleClass().add("queue-title");
-        title.setWrapText(true);
+        Label descLabel = new Label(ticket.getDescription());
+        // GANTI class-nya dari "queue-meta" menjadi "queue-description"
+        descLabel.getStyleClass().add("queue-description");
+        descLabel.setWrapText(true);
+        // Tambahkan ini agar kotaknya memanjang penuh mengikuti lebar card
+        descLabel.setMaxWidth(Double.MAX_VALUE);
 
         HBox bottomRow = new HBox(10);
         bottomRow.setAlignment(Pos.CENTER_LEFT);
@@ -238,13 +215,24 @@ public class TicketController implements Initializable {
         HBox.setHgrow(bottomSpacer, Priority.ALWAYS);
 
         bottomRow.getChildren().addAll(meta, bottomSpacer, btnClaim);
+        content.getChildren().addAll(topRow, titleLabel, descLabel, bottomRow);
 
-        content.getChildren().addAll(topRow, title, bottomRow);
+        // --- CUSTOM HEADER ACCORDION DENGAN BADGE & TEKS BOLD ---
+        HBox headerGraphic = new HBox(10);
+        headerGraphic.setAlignment(Pos.CENTER_LEFT);
 
-        String headerText = shortId(ticket.getTicketId()) + " | " + ticket.getPriority().toUpperCase() + " | " + truncate(ticket.getTitle(), 38);
-        TitledPane pane = new TitledPane(headerText, content);
+        Label headerBadge = createPriorityBadge(ticket.getPriority());
+        Label headerTitle = new Label(truncate(ticket.getTitle(), 32));
+        headerTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #d0d4dc; -fx-font-size: 13px;");
+
+        headerGraphic.getChildren().addAll(headerBadge, headerTitle);
+
+        TitledPane pane = new TitledPane();
+        pane.setGraphic(headerGraphic);
+        pane.setContent(content);
         pane.getStyleClass().add("accordion-pane");
         pane.setExpanded(false);
+
         return pane;
     }
 
@@ -252,24 +240,13 @@ public class TicketController implements Initializable {
         VBox session = new VBox(12);
         session.getStyleClass().addAll("active-session", "accordion-content");
 
-        VBox header = new VBox(6);
-        header.getStyleClass().add("active-session-header");
-
-        Label idLabel = new Label("TICKET " + shortId(ticket.getTicketId()));
+        // ID DIPINDAH KE DALAM KONTEN
+        VBox idBlock = new VBox(2);
+        Label idTitle = new Label("TICKET ID");
+        idTitle.getStyleClass().add("active-label");
+        Label idLabel = new Label(shortId(ticket.getTicketId()));
         idLabel.getStyleClass().add("active-ticket-id");
-
-        Label title = new Label(ticket.getTitle());
-        title.getStyleClass().add("active-ticket-title");
-        title.setWrapText(true);
-
-        HBox badges = new HBox(8);
-        badges.setAlignment(Pos.CENTER_LEFT);
-        badges.getChildren().addAll(
-                createPriorityBadge(ticket.getPriority()),
-                createStatusBadge(ticket.getStatus())
-        );
-
-        header.getChildren().addAll(idLabel, title, badges);
+        idBlock.getChildren().addAll(idTitle, idLabel);
 
         VBox descBlock = new VBox(4);
         Label descLabel = new Label("INCIDENT REPORT");
@@ -302,13 +279,25 @@ public class TicketController implements Initializable {
         btnClose.setOnAction(e -> closeTicket(ticket));
 
         actions.getChildren().addAll(btnResolve, btnClose, btnRelease);
+        session.getChildren().addAll(idBlock, descBlock, metaRow, actions);
 
-        session.getChildren().addAll(header, descBlock, metaRow, actions);
+        // --- CUSTOM HEADER ACTIVE ROOM DENGAN BADGE ---
+        HBox headerGraphic = new HBox(10);
+        headerGraphic.setAlignment(Pos.CENTER_LEFT);
 
-        String headerText = shortId(ticket.getTicketId()) + " | " + ticket.getStatus().toUpperCase() + " | " + truncate(ticket.getTitle(), 34);
-        TitledPane pane = new TitledPane(headerText, session);
+        // Memaksa status menjadi IN PROGRESS di active room badge (atau ikuti status tiket)
+        Label headerBadge = createStatusBadge(ticket.getStatus().equals("Open") ? "IN PROGRESS" : ticket.getStatus());
+        Label headerTitle = new Label(truncate(ticket.getTitle(), 32));
+        headerTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #d0d4dc; -fx-font-size: 13px;");
+
+        headerGraphic.getChildren().addAll(headerBadge, headerTitle);
+
+        TitledPane pane = new TitledPane();
+        pane.setGraphic(headerGraphic);
+        pane.setContent(session);
         pane.getStyleClass().add("accordion-pane");
         pane.setExpanded(true);
+
         return pane;
     }
 
@@ -482,7 +471,7 @@ public class TicketController implements Initializable {
     @FXML
     private void handleUserNav(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout_userDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout/user_dashboard.fxml"));
             Parent root = loader.load();
 
             String cssPath = getClass().getResource("/css/styles.css").toExternalForm();

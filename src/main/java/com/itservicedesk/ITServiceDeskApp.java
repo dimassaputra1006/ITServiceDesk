@@ -11,11 +11,11 @@ public class ITServiceDeskApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         DatabaseConfig.createTables();
-        FXMLLoader fxmlLoader = new FXMLLoader(ITServiceDeskApp.class.getResource("/layout_dashboard.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ITServiceDeskApp.class.getResource("/layout/ticket_dashboard.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load(), 1366, 768);
         scene.getStylesheets().add(ITServiceDeskApp.class.getResource("/css/styles.css").toExternalForm());
-        stage.setTitle("IT Service Desk // Workstation");
+        stage.setTitle("IT Service Desk");
         stage.setScene(scene);
         stage.show();
     }

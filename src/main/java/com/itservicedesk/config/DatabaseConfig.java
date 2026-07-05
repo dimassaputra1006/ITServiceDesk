@@ -1,27 +1,46 @@
 package com.itservicedesk.config;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConfig {
-    private static final String URL = "jdbc:sqlite:src/main/resources/database/ITServiceDesk.db";
+    private static final String DB_PATH = "src/main/resources/database/ITServiceDesk.db";
+    private static final String URL = "jdbc:sqlite:" + DB_PATH;
 
-    public static Connection getConnection(){
-        java.io.File dbDir = new java.io.File("src/main/resources/database");
+    public static Connection getConnection() {
+        File dbDir = new File("src/main/resources/database");
         if (!dbDir.exists()) {
             dbDir.mkdirs();
-            System.out.println("Folder database dibuat.");
+            System.out.println("Database folder created.");
         }
         Connection conn = null;
-        try{
+        try {
             conn = DriverManager.getConnection(URL);
-            System.out.println("Koneksi SQLite Berhasil!");
-        } catch (SQLException e){
-            System.out.println("Koneksi SQLite Gagal: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("SQLite connection failed: " + e.getMessage());
         }
         return conn;
+    }
+
+    /**
+     * Deletes the existing database file, if any.
+     * Use this only when the schema changes (columns added/removed) — SQLite's
+     * "CREATE TABLE IF NOT EXISTS" will NOT add new columns to a file that
+     * already exists, so the old file must be removed before createTables()
+     * can rebuild it with the new schema. This wipes all data.
+     */
+    public static void resetDatabase() {
+        File dbFile = new File(DB_PATH);
+        if (dbFile.exists()) {
+            if (dbFile.delete()) {
+                System.out.println("Old database file deleted: " + DB_PATH);
+            } else {
+                System.err.println("Failed to delete old database file: " + DB_PATH);
+            }
+        }
     }
 
     public static void createTables() {
@@ -30,7 +49,7 @@ public class DatabaseConfig {
         createTableActivityLog();
     }
 
-    public static void createTablesTickets(){
+    public static void createTablesTickets() {
         String sql = """
                 CREATE TABLE IF NOT EXISTS tickets (
                     ticket_id TEXT PRIMARY KEY,
@@ -48,7 +67,7 @@ public class DatabaseConfig {
         executeUpdate(sql, "Table tickets");
     }
 
-    public static void createTablesUsers(){
+    public static void createTablesUsers() {
         String sql = """
                 CREATE TABLE IF NOT EXISTS users (
                     employee_id TEXT PRIMARY KEY,
@@ -61,6 +80,7 @@ public class DatabaseConfig {
                     password_hash TEXT,
                     role TEXT,
                     department TEXT,
+                    avatar_path TEXT,
                     is_active BOOLEAN DEFAULT true,
                     is_locked BOOLEAN DEFAULT false,
                     created_at TEXT,
@@ -69,7 +89,7 @@ public class DatabaseConfig {
                 );
                 """;
 
-        executeUpdate(sql, "Table Users");
+        executeUpdate(sql, "Table users");
     }
 
     public static void createTableActivityLog() {
@@ -88,15 +108,15 @@ public class DatabaseConfig {
 
     public static void executeUpdate(String sql, String tableName) {
         try (Connection conn = getConnection();
-        Statement statement = conn.createStatement()) {
+             Statement statement = conn.createStatement()) {
             statement.execute(sql);
-            System.out.printf("%s telah dibuat / sudah ada \n", tableName);
-        }catch (SQLException e) {   
-            System.out.printf("Gagal membuat %s %s", tableName, e.getMessage());
+            System.out.printf("%s created / already exists%n", tableName);
+        } catch (SQLException e) {
+            System.err.printf("Failed to create %s: %s%n", tableName, e.getMessage());
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         createTables();
     }
 }

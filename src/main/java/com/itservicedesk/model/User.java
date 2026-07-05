@@ -10,54 +10,57 @@ public class User {
     private String username;
     private String email;
     private String phone;
-    private String title;
     private String assignedDevice;
     private String passwordHash;
     private String role;
     private String department;
+    private String avatarPath;
     private Boolean isActive;
     private Boolean isLocked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime lastLoginAt;
 
-    // Constructor blank
+    // Blank constructor
     public User() {
     }
 
-    // Constructor untuk objek baru (registrasi)
-    public User(String fullName, String username, String email, String phone, String title, String assignedDevice, String plainPassword, String role, String department) {
+    // Constructor for a brand new user (registration).
+    // No photo yet — the UI falls back to the default avatar asset until one is uploaded.
+    public User(String fullName, String username, String email, String phone,
+                String assignedDevice, String plainPassword, String role, String department) {
         this.employeeId = "EMP-" + UUID.randomUUID();
         this.fullName = fullName;
         this.username = username;
-        this.email = email;  // ← perbaikan: email sekarang tersimpan
+        this.email = email;
         this.phone = phone;
-        this.title = title;
-        this.assignedDevice= assignedDevice;
+        this.assignedDevice = assignedDevice;
         this.passwordHash = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
         this.role = role;
         this.department = department;
+        this.avatarPath = null;
         this.isActive = true;
         this.isLocked = false;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.lastLoginAt = null;
+        this.lastLoginAt = LocalDateTime.now();
     }
 
-    // Constructor untuk load dari database (semua field) dipakai sama dao
-    public User(String employeeId, String fullName, String username, String email,String phone, String title, String assignedDevice, String passwordHash,
-                String role, String department, Boolean isActive, Boolean isLocked,
-                LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLoginAt) {
+    // Constructor for loading a full record from the database
+    public User(String employeeId, String fullName, String username, String email, String phone,
+                String assignedDevice, String passwordHash, String role, String department, String avatarPath,
+                Boolean isActive, Boolean isLocked, LocalDateTime createdAt, LocalDateTime updatedAt,
+                LocalDateTime lastLoginAt) {
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.username = username;
         this.email = email;
         this.phone = phone;
-        this.title = title;
-        this.assignedDevice= assignedDevice;
+        this.assignedDevice = assignedDevice;
         this.passwordHash = passwordHash;
         this.role = role;
         this.department = department;
+        this.avatarPath = avatarPath;
         this.isActive = isActive;
         this.isLocked = isLocked;
         this.createdAt = createdAt;
@@ -65,13 +68,13 @@ public class User {
         this.lastLoginAt = lastLoginAt;
     }
 
-    // Update password (digunakan untuk ganti password biasa)
+    // Update password (used for a regular password change)
     public void updatePassword(String newPlainPassword) {
         this.passwordHash = BCrypt.hashpw(newPlainPassword, BCrypt.gensalt());
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Getter dan Setter (semua field)
+    // Getters and Setters
     public String getEmployeeId() { return employeeId; }
     public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
 
@@ -87,9 +90,6 @@ public class User {
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
     public String getAssignedDevice() { return assignedDevice; }
     public void setAssignedDevice(String assignedDevice) { this.assignedDevice = assignedDevice; }
 
@@ -101,6 +101,11 @@ public class User {
 
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
+
+    // Absolute path to the user's uploaded profile photo.
+    // Null/blank means no photo was uploaded — the UI shows the default avatar instead.
+    public String getAvatarPath() { return avatarPath; }
+    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
@@ -126,6 +131,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
                 ", department='" + department + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 ", isActive=" + isActive +
                 ", isLocked=" + isLocked +
                 '}';

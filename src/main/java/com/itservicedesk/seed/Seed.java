@@ -6,107 +6,92 @@ import com.itservicedesk.dao.UserDao;
 import com.itservicedesk.model.Ticket;
 import com.itservicedesk.model.User;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class Seed {
 
     public static void main(String[] args) {
-        System.out.println("Memulai Seeding Data ");
+        System.out.println("Starting data seeding...");
 
+        // Schema changed (avatar_path column added) — wipe the old .db file
+        // so createTables() can rebuild it with the new schema.
+        DatabaseConfig.resetDatabase();
         DatabaseConfig.createTables();
 
         UserDao userDao = new UserDao();
         TicketDao ticketDao = new TicketDao();
 
-        clearExistingData();
-
-        System.out.println("Membuat dummy users");
+        System.out.println("Creating dummy users");
         User[] users = createDummyUsers();
         String[] userIds = new String[users.length];
 
         for (int i = 0; i < users.length; i++) {
             if (userDao.insertUser(users[i])) {
                 userIds[i] = users[i].getEmployeeId();
-                System.out.printf("User dibuat: %s ( %s )\n", users[i].getFullName(), userIds[i]);
+                System.out.printf("User created: %s (%s)%n", users[i].getFullName(), userIds[i]);
             } else {
-                System.out.println("GAGAL insert user: " + users[i].getFullName());
+                System.out.println("FAILED to insert user: " + users[i].getFullName());
             }
         }
 
-        System.out.println("Membuat dummy tickets");
+        System.out.println("Creating dummy tickets");
         createDummyTickets(ticketDao, userIds);
 
-        System.out.println("Seeding selesai! Database siap untuk testing.");
+        System.out.println("Seeding complete! Database is ready for testing.");
     }
 
-    private static void clearExistingData() {
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute("DELETE FROM activity_log");
-            stmt.execute("DELETE FROM tickets");
-            stmt.execute("DELETE FROM users");
-            System.out.println("Data lama dihapus.");
-        } catch (SQLException e) {
-            System.out.println("Warning: " + e.getMessage());
-        }
-    }
-
-    // Urutan constructor User: fullName, username, email, phone, title, assignedDevice, plainPassword, role, department
+    // Order matches the User constructor: fullName, username, email, phone, title, assignedDevice, plainPassword, role, department
     private static User[] createDummyUsers() {
         return new User[]{
                 new User("Budi Santoso", "budi.santoso", "budi@company.com", "081234567890",
-                        "Finance Officer", "Laptop Dell XPS", "password123", "Staff", "Finance"),
+                        "Dell XPS Laptop", "password123", "Staff", "Finance"),
 
                 new User("Siti Rahayu", "siti.rahayu", "siti@company.com", "081298765432",
-                        "HR Manager", "MacBook Pro", "password123", "Manager", "HR"),
+                        "MacBook Pro", "password123", "Manager", "HR"),
 
                 new User("Ahmad Fauzi", "ahmad.fauzi", "ahmad@company.com", "085712345678",
-                        "IT Support Specialist", "Lenovo ThinkPad", "password123", "Staff", "IT"),
+                        "Lenovo ThinkPad", "password123", "Staff", "IT"),
 
                 new User("Rina Wijaya", "rina.wijaya", "rina@company.com", "087812345678",
-                        "Marketing Supervisor", "HP Pavilion", "password123", "Supervisor", "Marketing"),
+                        "HP Pavilion", "password123", "Supervisor", "Marketing"),
 
                 new User("Dedi Wijaya", "dedi.wijaya", "dedi@company.com", "081987654321",
-                        "Graphic Designer", "iMac 24 inch", "password123", "Staff", "Design")
+                        "24-inch iMac", "password123", "Staff", "Design")
         };
     }
 
     private static void createDummyTickets(TicketDao ticketDao, String[] userIds) {
         Ticket t1 = new Ticket(
-                "[CRITICAL] Sistem SAP Gagal Posting Invoice",
-                "Error Code ERR-SAP-992: Database temporary table full saat posting Invoice #INV-2026-0501",
+                "SAP System Failed to Post Invoice",
+                "Error Code ERR-SAP-992: Database temporary table full while posting Invoice #INV-2026-0501",
                 userIds[0], "Critical");
         ticketDao.insertTicket(t1);
 
         Ticket t2 = new Ticket(
-                "[HIGH] Laptop Dedi - Layar Bergaris dan Flicker",
-                "Layar laptop asset IT-772 muncul garis hijau dan flicker parah, sudah direstart tetap bermasalah",
+                "Dedi's Laptop - Screen Flickering with Lines",
+                "Screen on asset IT-772 shows green lines and severe flickering, still occurs after restart",
                 userIds[4], "High");
         ticketDao.insertTicket(t2);
         ticketDao.claimTicket(t2.getTicketId(), userIds[2]);
 
         Ticket t3 = new Ticket(
-                "[MEDIUM] WiFi Kantor No Internet",
-                "Terhubung ke WiFi tapi dapat IP 169.254.x.x (Limited Access)",
+                "Office WiFi No Internet",
+                "Connected to WiFi but getting a 169.254.x.x IP (Limited Access)",
                 userIds[1], "Medium");
         ticketDao.insertTicket(t3);
 
         Ticket t4 = new Ticket(
-                "[HIGH] Akun Domain Terkunci",
-                "Akun Budi terkunci setelah salah password 3x",
+                "Domain Account Locked",
+                "Budi's account locked after 3 failed password attempts",
                 userIds[0], "High");
         ticketDao.insertTicket(t4);
         ticketDao.claimTicket(t4.getTicketId(), userIds[2]);
         ticketDao.resolveTicket(t4.getTicketId());
 
         Ticket t5 = new Ticket(
-                "[LOW] Request Instalasi Adobe Photoshop",
-                "Mohon instalasi Adobe Photoshop untuk tim Marketing",
+                "Adobe Photoshop Installation Request",
+                "Please install Adobe Photoshop for the Marketing team",
                 userIds[3], "Low");
         ticketDao.insertTicket(t5);
 
-        System.out.println("5 ticket berhasil ditambahkan.");
+        System.out.println("5 tickets added successfully.");
     }
 }
