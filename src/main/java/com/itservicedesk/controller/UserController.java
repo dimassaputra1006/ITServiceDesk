@@ -2,6 +2,8 @@ package com.itservicedesk.controller;
 
 import com.itservicedesk.dao.UserDao;
 import com.itservicedesk.model.User;
+import com.itservicedesk.service.UserService;
+import com.itservicedesk.util.AnalystSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +34,7 @@ public class UserController implements Initializable {
     // Place the actual asset at: src/main/resources/images/default-avatar.jpg
     private static final String DEFAULT_AVATAR_RESOURCE = "/images/default-avatar.jpg";
 
+    @FXML private Label lblAnalystName;
     @FXML private TableView<User> userTable;
     @FXML private TableColumn<User, String> nameCol;
     @FXML private TextField searchField;
@@ -53,18 +56,32 @@ public class UserController implements Initializable {
     @FXML private Button btnDeleteUser;
 
     private final UserDao userDao = new UserDao();
+    private final UserService userService = new UserService();
     private final ObservableList<User> userList = FXCollections.observableArrayList();
     private FilteredList<User> filteredUsers;
     private User selectedUser;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupAnalystLabel();
         setupProfileCombos();
         filteredUsers = new FilteredList<>(userList, user -> true);
         setupTable();
         setupSearch();
         loadUserData();
         setupSelectionListener();
+    }
+
+    // Shows who is currently on shift, read from the same AnalystSession
+    // that TicketController populates — so switching screens doesn't
+    // lose track of who is logged in as the active analyst.
+    private void setupAnalystLabel() {
+        if (lblAnalystName == null) {
+            return;
+        }
+        lblAnalystName.setText(AnalystSession.isAnalystSelected()
+                ? "ANALYST: " + AnalystSession.getCurrentAnalystName().toUpperCase()
+                : "ANALYST: ---");
     }
 
     private void setupProfileCombos() {
@@ -358,11 +375,6 @@ public class UserController implements Initializable {
 
         dialog.showAndWait().ifPresent(result -> {
             if (result == saveBtn) {
-                if (fullNameField.getText().trim().isEmpty() || usernameField.getText().trim().isEmpty()) {
-                    showAlert("Validation", "Full name and username are required.");
-                    return;
-                }
-
                 User newUser = new User(
                         fullNameField.getText().trim(),
                         usernameField.getText().trim(),
@@ -378,11 +390,14 @@ public class UserController implements Initializable {
                     newUser.setAvatarPath(selectedAvatarFile[0].getAbsolutePath());
                 }
 
-                if (userDao.insertUser(newUser)) {
+                // Field validation + the "is this username already taken"
+                // rule now live in UserService, not here.
+                String error = userService.addUser(newUser);
+                if (error == null) {
                     loadUserData();
                     showAlert("Success", "New user added successfully.");
                 } else {
-                    showAlert("Failed", "Failed to add new user.");
+                    showAlert("Failed", error);
                 }
             }
         });
@@ -397,26 +412,13 @@ public class UserController implements Initializable {
             return;
         }
 
-        String role = cbProfileRole.getValue();
-        String department = cbProfileDept.getValue() != null ? cbProfileDept.getValue().trim() : "";
-
-        if (role == null || role.isBlank()) {
-            showAlert("Validation", "Role is required.");
-            return;
-        }
-        if (department.isBlank()) {
-            showAlert("Validation", "Department is required.");
-            return;
-        }
-
-        selectedUser.setRole(role);
-        selectedUser.setDepartment(department);
-
-        if (userDao.updateUser(selectedUser)) {
+        // Validation + persistence now live in UserService.
+        String error = userService.updateProfile(selectedUser, cbProfileRole.getValue(), cbProfileDept.getValue());
+        if (error == null) {
             loadUserData();
             showAlert("Success", "User updated successfully.");
         } else {
-            showAlert("Failed", "Failed to save user changes.");
+            showAlert("Failed", error);
         }
     }
 
@@ -430,7 +432,7 @@ public class UserController implements Initializable {
         // Capture the name before refreshing, so a selection change during
         // reload can never turn this into a null-pointer on the next line.
         String name = selectedUser.getFullName();
-        if (userDao.lockUser(selectedUser.getEmployeeId())) {
+        if (userService.lockUser(selectedUser.getEmployeeId())) {
             reloadSelectedUser();
             showAlert("Success", name + " has been locked.");
         } else {
@@ -446,7 +448,7 @@ public class UserController implements Initializable {
         }
 
         String name = selectedUser.getFullName();
-        if (userDao.unlockUser(selectedUser.getEmployeeId())) {
+        if (userService.unlockUser(selectedUser.getEmployeeId())) {
             reloadSelectedUser();
             showAlert("Success", name + " has been unlocked.");
         } else {
@@ -469,7 +471,7 @@ public class UserController implements Initializable {
         confirm.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
                 String deletedId = selectedUser.getEmployeeId();
-                if (userDao.deleteUser(deletedId)) {
+                if (userService.deleteUser(deletedId)) {
                     selectedUser = null;
                     loadUserData();
                     showAlert("Success", "User deleted successfully.");

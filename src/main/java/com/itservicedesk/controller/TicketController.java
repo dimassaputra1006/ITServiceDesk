@@ -5,6 +5,7 @@ import com.itservicedesk.dao.UserDao;
 import com.itservicedesk.model.Ticket;
 import com.itservicedesk.model.User;
 import com.itservicedesk.service.TicketService;
+import com.itservicedesk.util.AnalystSession;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -46,7 +47,6 @@ public class TicketController implements Initializable {
 
     private final TicketService ticketService = new TicketService();
     private final UserDao userDao = new UserDao();
-    private User currentAnalyst;
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
 
     @Override
@@ -66,15 +66,17 @@ public class TicketController implements Initializable {
     }
 
     private void setupAnalystSelector() {
-        List<User> analysts = userDao.getActiveItStaff();
-        if (!analysts.isEmpty()) {
-            currentAnalyst = analysts.get(0);
-        } else {
-            currentAnalyst = userDao.findByUsername("ahmad.fauzi");
+        // Only auto-pick an analyst the first time the app runs; if the
+        // session already has one (e.g. set while the User dashboard was
+        // open), keep using that instead of overwriting it.
+        if (!AnalystSession.isAnalystSelected()) {
+            List<User> analysts = userDao.getActiveItStaff();
+            User analyst = !analysts.isEmpty() ? analysts.get(0) : userDao.findByUsername("ahmad.fauzi");
+            AnalystSession.setCurrentAnalyst(analyst);
         }
 
-        if (currentAnalyst != null) {
-            lblAnalystName.setText("ANALYST: " + currentAnalyst.getFullName().toUpperCase());
+        if (AnalystSession.isAnalystSelected()) {
+            lblAnalystName.setText("ANALYST: " + AnalystSession.getCurrentAnalystName().toUpperCase());
         }
     }
 
@@ -92,7 +94,7 @@ public class TicketController implements Initializable {
 
     private void updateTelemetry() {
         lblQueueCount.setText(String.valueOf(ticketService.getTicketDao().countByStatus("Open")));
-        String analystId = currentAnalyst != null ? currentAnalyst.getEmployeeId() : null;
+        String analystId = AnalystSession.getCurrentAnalystId();
         lblActiveCount.setText(String.valueOf(ticketService.getTicketDao().countActiveByAssignee(analystId)));
         lblResolvedCount.setText(String.valueOf(ticketService.getTicketDao().countByStatus("Resolved")));
     }
@@ -125,7 +127,7 @@ public class TicketController implements Initializable {
 
     private void loadActiveRoom() {
         activeRoomContainer.getChildren().clear();
-        String analystId = currentAnalyst != null ? currentAnalyst.getEmployeeId() : null;
+        String analystId = AnalystSession.getCurrentAnalystId();
         List<Ticket> activeTickets = ticketService.getTicketDao().getActiveTickets(analystId);
 
         if (activeTickets.isEmpty()) {
@@ -313,11 +315,11 @@ public class TicketController implements Initializable {
     }
 
     private void claimTicket(Ticket ticket) {
-        if (currentAnalyst == null) {
+        if (!AnalystSession.isAnalystSelected()) {
             showAlert("Analyst belum dipilih", "Pilih analyst dulu sebelum claim ticket.");
             return;
         }
-        if (ticketService.claimTicket(ticket.getTicketId(), currentAnalyst.getEmployeeId())) {
+        if (ticketService.claimTicket(ticket.getTicketId(), AnalystSession.getCurrentAnalystId())) {
             refreshAll();
         } else {
             showAlert("Claim gagal", "Ticket tidak bisa di-claim. Pastikan status masih Open.");
@@ -325,11 +327,11 @@ public class TicketController implements Initializable {
     }
 
     private void resolveTicket(Ticket ticket) {
-        if (currentAnalyst == null) {
+        if (!AnalystSession.isAnalystSelected()) {
             showAlert("Analyst belum dipilih", "Pilih analyst dulu sebelum resolve ticket.");
             return;
         }
-        if (ticketService.resolveTicket(ticket.getTicketId(), currentAnalyst.getEmployeeId())) {
+        if (ticketService.resolveTicket(ticket.getTicketId(), AnalystSession.getCurrentAnalystId())) {
             refreshAll();
         } else {
             showAlert("Resolve gagal", "Ticket hanya bisa di-resolve dari status In Progress.");
@@ -337,11 +339,11 @@ public class TicketController implements Initializable {
     }
 
     private void closeTicket(Ticket ticket) {
-        if (currentAnalyst == null) {
+        if (!AnalystSession.isAnalystSelected()) {
             showAlert("Analyst belum dipilih", "Pilih analyst dulu sebelum close ticket.");
             return;
         }
-        if (ticketService.closeTicket(ticket.getTicketId(), currentAnalyst.getEmployeeId())) {
+        if (ticketService.closeTicket(ticket.getTicketId(), AnalystSession.getCurrentAnalystId())) {
             refreshAll();
         } else {
             showAlert("Close gagal", "Ticket hanya bisa di-close dari status In Progress/Resolved.");
@@ -349,11 +351,11 @@ public class TicketController implements Initializable {
     }
 
     private void releaseTicket(Ticket ticket) {
-        if (currentAnalyst == null) {
+        if (!AnalystSession.isAnalystSelected()) {
             showAlert("Analyst belum dipilih", "Pilih analyst dulu sebelum release ticket.");
             return;
         }
-        if (ticketService.releaseTicket(ticket.getTicketId(), currentAnalyst.getEmployeeId())) {
+        if (ticketService.releaseTicket(ticket.getTicketId(), AnalystSession.getCurrentAnalystId())) {
             refreshAll();
         } else {
             showAlert("Release gagal", "Ticket hanya bisa di-release oleh analyst yang sedang memegang ticket tersebut.");
@@ -413,7 +415,7 @@ public class TicketController implements Initializable {
                     return;
                 }
                 Ticket ticket = new Ticket(title, desc, selectedReporter.getEmployeeId(), priorityBox.getValue());
-                String analystId = currentAnalyst != null ? currentAnalyst.getEmployeeId() : "SYSTEM";
+                String analystId = AnalystSession.isAnalystSelected() ? AnalystSession.getCurrentAnalystId() : "SYSTEM";
                 if (ticketService.createTicket(ticket, analystId)) {
                     refreshAll();
                 } else {

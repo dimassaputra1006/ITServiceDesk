@@ -26,13 +26,6 @@ public class DatabaseConfig {
         return conn;
     }
 
-    /**
-     * Deletes the existing database file, if any.
-     * Use this only when the schema changes (columns added/removed) — SQLite's
-     * "CREATE TABLE IF NOT EXISTS" will NOT add new columns to a file that
-     * already exists, so the old file must be removed before createTables()
-     * can rebuild it with the new schema. This wipes all data.
-     */
     public static void resetDatabase() {
         File dbFile = new File(DB_PATH);
         if (dbFile.exists()) {
