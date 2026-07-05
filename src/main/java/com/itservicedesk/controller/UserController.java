@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class UserController implements Initializable {
@@ -39,19 +39,60 @@ public class UserController implements Initializable {
     // Detail Panel
     @FXML private Circle profileAvatar;
     @FXML private Label lblProfileName;
-    @FXML private Label lblProfileDept;
+    @FXML private ComboBox<String> cbProfileRole;
+    @FXML private ComboBox<String> cbProfileDept;
+    @FXML private Label lblAccountStatus;
     @FXML private Label lblProfileEmail;
+    @FXML private Label lblProfileUsername;
+    @FXML private Label lblProfileEmployeeId;
     @FXML private Label lblProfilePhone;
     @FXML private Label lblProfileDevice;
+    @FXML private Button btnSaveChanges;
+    @FXML private Button btnLockUser;
+    @FXML private Button btnUnlockUser;
+    @FXML private Button btnDeleteUser;
 
     private final UserDao userDao = new UserDao();
     private final ObservableList<User> userList = FXCollections.observableArrayList();
+    private FilteredList<User> filteredUsers;
+    private User selectedUser;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupProfileCombos();
+        filteredUsers = new FilteredList<>(userList, user -> true);
         setupTable();
+        setupSearch();
         loadUserData();
         setupSelectionListener();
+    }
+
+    private void setupProfileCombos() {
+        cbProfileRole.getItems().addAll("Staff", "Manager", "Supervisor", "Admin");
+        cbProfileDept.getItems().addAll("Finance", "HR", "IT", "Marketing", "Design");
+    }
+
+    private void setupSearch() {
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            String query = newVal == null ? "" : newVal.trim().toLowerCase();
+            filteredUsers.setPredicate(user -> matchesSearch(user, query));
+        });
+    }
+
+    private boolean matchesSearch(User user, String query) {
+        if (query.isEmpty()) {
+            return true;
+        }
+        return containsIgnoreCase(user.getFullName(), query)
+                || containsIgnoreCase(user.getUsername(), query)
+                || containsIgnoreCase(user.getEmail(), query)
+                || containsIgnoreCase(user.getDepartment(), query)
+                || containsIgnoreCase(user.getRole(), query)
+                || containsIgnoreCase(user.getEmployeeId(), query);
+    }
+
+    private boolean containsIgnoreCase(String value, String query) {
+        return value != null && value.toLowerCase().contains(query);
     }
 
     private void setupTable() {
@@ -60,44 +101,99 @@ public class UserController implements Initializable {
     }
 
     private void loadUserData() {
-        userList.clear();
-        List<User> users = userDao.getAllUsers();
-        System.out.println("Users loaded from DB: " + users.size());
-        userList.addAll(users);
-        userTable.setItems(userList);
+        String selectedId = selectedUser != null ? selectedUser.getEmployeeId() : null;
+        userList.setAll(userDao.getAllUsers());
+        System.out.println("Users loaded from DB: " + userList.size());
+        userTable.setItems(filteredUsers);
 
-        // Default to showing the first employee instead of an empty placeholder
-        if (!userList.isEmpty()) {
+        if (selectedId != null) {
+            filteredUsers.stream()
+                    .filter(user -> selectedId.equals(user.getEmployeeId()))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            user -> userTable.getSelectionModel().select(user),
+                            () -> selectFirstOrEmpty()
+                    );
+        } else {
+            selectFirstOrEmpty();
+        }
+    }
+
+    private void selectFirstOrEmpty() {
+        if (!filteredUsers.isEmpty()) {
             userTable.getSelectionModel().selectFirst();
         } else {
+            userTable.getSelectionModel().clearSelection();
             showEmptyProfile();
         }
     }
 
     private void setupSelectionListener() {
         userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newUser) -> {
+            selectedUser = newUser;
             if (newUser != null) {
                 showUserDetail(newUser);
+            } else {
+                showEmptyProfile();
             }
         });
     }
 
     private void showUserDetail(User user) {
         lblProfileName.setText(user.getFullName());
+        cbProfileRole.setValue(user.getRole() != null ? user.getRole() : "Staff");
+        cbProfileDept.setValue(user.getDepartment() != null ? user.getDepartment() : "");
+        lblAccountStatus.setText(formatAccountStatus(user));
         lblProfileEmail.setText(user.getEmail() != null ? user.getEmail() : "-");
+        lblProfileUsername.setText(user.getUsername() != null ? user.getUsername() : "-");
+        lblProfileEmployeeId.setText(user.getEmployeeId() != null ? user.getEmployeeId() : "-");
         lblProfilePhone.setText(user.getPhone() != null ? user.getPhone() : "-");
         lblProfileDevice.setText(user.getAssignedDevice() != null ? user.getAssignedDevice() : "No data yet.");
         applyAvatar(user);
+        updateAccountActionButtons(user);
+        setProfileActionsEnabled(true);
+    }
+
+    private String formatAccountStatus(User user) {
+        boolean locked = Boolean.TRUE.equals(user.getIsLocked());
+        boolean active = user.getIsActive() == null || user.getIsActive();
+        if (locked) {
+            return "Locked";
+        }
+        return active ? "Active" : "Inactive";
+    }
+
+    private void updateAccountActionButtons(User user) {
+        boolean locked = Boolean.TRUE.equals(user.getIsLocked());
+        btnLockUser.setDisable(locked);
+        btnUnlockUser.setDisable(!locked);
+    }
+
+    private void setProfileActionsEnabled(boolean enabled) {
+        btnSaveChanges.setDisable(!enabled);
+        btnDeleteUser.setDisable(!enabled);
+        cbProfileRole.setDisable(!enabled);
+        cbProfileDept.setDisable(!enabled);
+        if (!enabled) {
+            btnLockUser.setDisable(true);
+            btnUnlockUser.setDisable(true);
+        }
     }
 
     // Shown only when the directory has zero employees
     private void showEmptyProfile() {
+        selectedUser = null;
         lblProfileName.setText("Select Employee");
-        lblProfileDept.setText("-");
+        cbProfileRole.setValue(null);
+        cbProfileDept.setValue(null);
+        lblAccountStatus.setText("-");
         lblProfileEmail.setText("-");
+        lblProfileUsername.setText("-");
+        lblProfileEmployeeId.setText("-");
         lblProfilePhone.setText("-");
         lblProfileDevice.setText("No data yet.");
         applyAvatar(null);
+        setProfileActionsEnabled(false);
     }
 
     // ==================== Avatar handling ====================
@@ -174,9 +270,6 @@ public class UserController implements Initializable {
         TextField phoneField = new TextField();
         phoneField.setPromptText("Phone Number");
 
-        TextField titleField = new TextField();
-        titleField.setPromptText("Job Title");
-
         TextField deviceField = new TextField();
         deviceField.setPromptText("Assigned Device");
 
@@ -212,19 +305,51 @@ public class UserController implements Initializable {
             }
         });
 
-        VBox form = new VBox(10,
-                new Label("Full Name"), fullNameField,
-                new Label("Username"), usernameField,
-                new Label("Email"), emailField,
-                new Label("Phone"), phoneField,
-                new Label("Job Title"), titleField,
-                new Label("Device"), deviceField,
-                new Label("Role"), roleBox,
-                new Label("Department"), departmentField,
-                new Label("Password"), passwordField,
-                new Label("Profile Photo"), choosePhotoBtn, avatarPreview
-        );
+        // Laid out as a 2-column grid instead of one long vertical stack,
+        // so the dialog stays a reasonable height instead of running far
+        // down the screen.
+        fullNameField.setPrefWidth(220);
+        usernameField.setPrefWidth(220);
+        emailField.setPrefWidth(220);
+        phoneField.setPrefWidth(220);
+        deviceField.setPrefWidth(220);
+        roleBox.setPrefWidth(220);
+        departmentField.setPrefWidth(220);
+        passwordField.setPrefWidth(220);
 
+        javafx.scene.layout.GridPane form = new javafx.scene.layout.GridPane();
+        form.setHgap(16);
+        form.setVgap(10);
+        form.setPadding(new javafx.geometry.Insets(10, 5, 10, 5));
+
+        form.add(new Label("Full Name"), 0, 0);
+        form.add(fullNameField, 0, 1);
+        form.add(new Label("Username"), 1, 0);
+        form.add(usernameField, 1, 1);
+
+        form.add(new Label("Email"), 0, 2);
+        form.add(emailField, 0, 3);
+        form.add(new Label("Phone"), 1, 2);
+        form.add(phoneField, 1, 3);
+
+        form.add(new Label("Device"), 0, 4);
+        form.add(deviceField, 0, 5);
+        form.add(new Label("Role"), 1, 4);
+        form.add(roleBox, 1, 5);
+
+        form.add(new Label("Department"), 0, 6);
+        form.add(departmentField, 0, 7);
+        form.add(new Label("Password"), 1, 6);
+        form.add(passwordField, 1, 7);
+
+        VBox photoBox = new VBox(6, choosePhotoBtn, avatarPreview);
+        Label photoLabel = new Label("Profile Photo");
+        form.add(photoLabel, 0, 8);
+        form.add(photoBox, 0, 9);
+        javafx.scene.layout.GridPane.setColumnSpan(photoLabel, 2);
+        javafx.scene.layout.GridPane.setColumnSpan(photoBox, 2);
+
+        form.getStyleClass().add("dialog-form");
         dialog.getDialogPane().setContent(form);
         dialog.getDialogPane().getStylesheets().add(
                 getClass().getResource("/css/styles.css").toExternalForm()
@@ -261,6 +386,124 @@ public class UserController implements Initializable {
                 }
             }
         });
+    }
+
+    // ==================== Manage User ====================
+
+    @FXML
+    private void handleSaveChanges(ActionEvent event) {
+        if (selectedUser == null) {
+            showAlert("Validation", "Select an employee first.");
+            return;
+        }
+
+        String role = cbProfileRole.getValue();
+        String department = cbProfileDept.getValue() != null ? cbProfileDept.getValue().trim() : "";
+
+        if (role == null || role.isBlank()) {
+            showAlert("Validation", "Role is required.");
+            return;
+        }
+        if (department.isBlank()) {
+            showAlert("Validation", "Department is required.");
+            return;
+        }
+
+        selectedUser.setRole(role);
+        selectedUser.setDepartment(department);
+
+        if (userDao.updateUser(selectedUser)) {
+            loadUserData();
+            showAlert("Success", "User updated successfully.");
+        } else {
+            showAlert("Failed", "Failed to save user changes.");
+        }
+    }
+
+    @FXML
+    private void handleLockUser(ActionEvent event) {
+        if (selectedUser == null) {
+            showAlert("Validation", "Select an employee first.");
+            return;
+        }
+
+        // Capture the name before refreshing, so a selection change during
+        // reload can never turn this into a null-pointer on the next line.
+        String name = selectedUser.getFullName();
+        if (userDao.lockUser(selectedUser.getEmployeeId())) {
+            reloadSelectedUser();
+            showAlert("Success", name + " has been locked.");
+        } else {
+            showAlert("Failed", "Failed to lock user account.");
+        }
+    }
+
+    @FXML
+    private void handleUnlockUser(ActionEvent event) {
+        if (selectedUser == null) {
+            showAlert("Validation", "Select an employee first.");
+            return;
+        }
+
+        String name = selectedUser.getFullName();
+        if (userDao.unlockUser(selectedUser.getEmployeeId())) {
+            reloadSelectedUser();
+            showAlert("Success", name + " has been unlocked.");
+        } else {
+            showAlert("Failed", "Failed to unlock user account.");
+        }
+    }
+
+    @FXML
+    private void handleDeleteUser(ActionEvent event) {
+        if (selectedUser == null) {
+            showAlert("Validation", "Select an employee first.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete User");
+        confirm.setHeaderText("Delete " + selectedUser.getFullName() + "?");
+        confirm.setContentText("This action cannot be undone.");
+
+        confirm.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.OK) {
+                String deletedId = selectedUser.getEmployeeId();
+                if (userDao.deleteUser(deletedId)) {
+                    selectedUser = null;
+                    loadUserData();
+                    showAlert("Success", "User deleted successfully.");
+                } else {
+                    showAlert("Failed", "Failed to delete user. The account may still be linked to tickets.");
+                }
+            }
+        });
+    }
+
+    private void reloadSelectedUser() {
+        if (selectedUser == null) {
+            return;
+        }
+        User refreshed = userDao.findByEmployeeId(selectedUser.getEmployeeId());
+        if (refreshed != null) {
+            // Update the existing selected object's fields in place instead of
+            // swapping in a brand-new User instance via userList.set(...).
+            // Replacing the list item with a different object identity was
+            // causing the TableView's selection (wrapped by the FilteredList)
+            // to lose track of "who is selected", which reset selectedUser to
+            // null right after a lock/unlock/save and forced the user to
+            // re-click the row before the next action would work.
+            selectedUser.setIsLocked(refreshed.getIsLocked());
+            selectedUser.setIsActive(refreshed.getIsActive());
+            selectedUser.setRole(refreshed.getRole());
+            selectedUser.setDepartment(refreshed.getDepartment());
+            selectedUser.setUpdatedAt(refreshed.getUpdatedAt());
+
+            showUserDetail(selectedUser);
+            userTable.refresh();
+        } else {
+            loadUserData();
+        }
     }
 
     private void showAlert(String title, String message) {

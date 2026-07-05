@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<BorderPane prefHeight="650" prefWidth="1000" styleClass="workstation-root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
+<BorderPane prefHeight="650" prefWidth="1000" styleClass="workstation-root" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.itservicedesk.controller.UserController">
 
     <top>
         <VBox spacing="0">
@@ -28,7 +28,7 @@
                 </HBox>
 
                 <!-- Toolbar row — search + primary action, mirrors ticket dashboard's toolbar -->
-                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="toolbar">
+                <HBox alignment="TOP_CENTER" spacing="12" styleClass="toolbar">
                     <padding>
                         <Insets bottom="8" left="20" right="20" top="8" />
                     </padding>
@@ -50,7 +50,7 @@
             <children>
                 <TableView fx:id="userTable" styleClass="user-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="nameCol" prefWidth="400" text="Employee Name" />
+                        <TableColumn fx:id="nameCol" prefWidth="610.0000247955322" text="Employee Name" />
                     </columns>
                 </TableView>
             </children>
@@ -58,46 +58,119 @@
     </center>
 
     <right>
-        <VBox alignment="TOP_CENTER" prefWidth="350" spacing="16" styleClass="panel, profile-panel">
+        <VBox alignment="TOP_CENTER" prefWidth="350" spacing="0" styleClass="panel, profile-panel">
             <padding>
-                <Insets bottom="24" left="16" right="16" top="24" />
+                <Insets bottom="20" left="18" right="18" top="24" />
             </padding>
             <children>
-                <Circle fx:id="profileAvatar" radius="50" strokeType="INSIDE" styleClass="avatar-placeholder" />
-                <Label fx:id="lblProfileName" styleClass="profile-name" text="Select Employee" />
+                <!-- Header: avatar + name + email, like the Directory profile header -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <children>
+                        <Circle fx:id="profileAvatar" radius="30" strokeType="INSIDE" styleClass="avatar-placeholder" />
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="lblProfileName" styleClass="profile-name" text="Select Employee" />
+                                <Label fx:id="lblProfileEmail" styleClass="profile-email" text="-" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
 
-                <TabPane prefHeight="400" styleClass="profile-tabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-                    <tabs>
-                        <Tab text="About &amp; Department">
-                            <content>
-                                <VBox spacing="8" styleClass="tab-content">
-                                    <children>
-                                        <Label styleClass="field-label" text="Department:" />
-                                        <Label fx:id="lblProfileDept" styleClass="field-value" text="-" />
-                                        <Label styleClass="field-label" text="Email:" />
-                                        <Label fx:id="lblProfileEmail" styleClass="field-value" text="-" />
-                                        <Label styleClass="field-label" text="Phone:" />
-                                        <Label fx:id="lblProfilePhone" styleClass="field-value" text="-" />
-                                    </children>
+                <VBox VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets top="18" />
+                    </VBox.margin>
+                    <children>
+                        <!-- Identity section -->
+                        <Label styleClass="section-title" text="IDENTITY" />
+                        <GridPane hgap="18" vgap="12">
+                            <VBox.margin>
+                                <Insets bottom="16" top="10" />
+                            </VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50" />
+                                <ColumnConstraints percentWidth="50" />
+                            </columnConstraints>
+                            <children>
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label styleClass="field-label" text="Username" />
+                                    <Label fx:id="lblProfileUsername" styleClass="field-value" text="-" />
                                 </VBox>
-                            </content>
-                        </Tab>
+                                <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label styleClass="field-label" text="Employee ID" />
+                                    <Label fx:id="lblProfileEmployeeId" styleClass="field-value" text="-" />
+                                </VBox>
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                    <Label styleClass="field-label" text="Phone" />
+                                    <Label fx:id="lblProfilePhone" styleClass="field-value" text="-" />
+                                </VBox>
+                            </children>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
 
-                        <Tab text="Active Devices">
-                            <content>
-                                <VBox spacing="8" styleClass="tab-content">
-                                    <children>
-                                        <Label styleClass="field-label" text="Laptop / PC:" />
-                                        <Label fx:id="lblProfileDevice" styleClass="field-value" text="No data yet." wrapText="true" />
-                                    </children>
+                        <Separator styleClass="profile-divider" />
+
+                        <!-- Organization section -->
+                        <Label styleClass="section-title" text="ORGANIZATION" />
+                        <GridPane hgap="18" vgap="12">
+                            <VBox.margin>
+                                <Insets bottom="16" top="10" />
+                            </VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50" />
+                                <ColumnConstraints percentWidth="50" />
+                            </columnConstraints>
+                            <children>
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label styleClass="field-label" text="Role" />
+                                    <ComboBox fx:id="cbProfileRole" maxWidth="Infinity" styleClass="search-field" />
                                 </VBox>
-                            </content>
-                        </Tab>
-                    </tabs>
+                                <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label styleClass="field-label" text="Department" />
+                                    <ComboBox fx:id="cbProfileDept" editable="true" maxWidth="Infinity" styleClass="search-field" />
+                                </VBox>
+                                <VBox spacing="2" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                    <Label styleClass="field-label" text="Account Status" />
+                                    <Label fx:id="lblAccountStatus" styleClass="field-value" text="-" />
+                                </VBox>
+                            </children>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
+
+                        <Separator styleClass="profile-divider" />
+
+                        <!-- Device section -->
+                        <Label styleClass="section-title" text="DEVICE" />
+                        <VBox spacing="2">
+                            <VBox.margin>
+                                <Insets bottom="8" top="10" />
+                            </VBox.margin>
+                            <children>
+                                <Label styleClass="field-label" text="Assigned Device" />
+                                <Label fx:id="lblProfileDevice" styleClass="field-value" text="No data yet." wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <Button fx:id="btnSaveChanges" maxWidth="Infinity" onAction="#handleSaveChanges" styleClass="toolbar-button, toolbar-button-primary" text="SAVE CHANGES" />
+
+                <HBox alignment="CENTER" spacing="8">
                     <VBox.margin>
                         <Insets top="8" />
                     </VBox.margin>
-                </TabPane>
+                    <children>
+                        <Button fx:id="btnLockUser" onAction="#handleLockUser" styleClass="toolbar-button" text="LOCK" />
+                        <Button fx:id="btnUnlockUser" onAction="#handleUnlockUser" styleClass="toolbar-button" text="UNLOCK" />
+                        <Button fx:id="btnDeleteUser" onAction="#handleDeleteUser" styleClass="toolbar-button, btn-close" text="DELETE" />
+                    </children>
+                </HBox>
             </children>
         </VBox>
     </right>

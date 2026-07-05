@@ -146,6 +146,17 @@
     -fx-border-color: #74b8f5;
 }
 
+/* Department ComboBox is editable, jadi ada TextField bawaan di
+   dalamnya — tanpa ini, TextField itu tampil dengan box putih
+   sendiri di dalam box gelap milik ComboBox-nya. */
+.search-field > .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-text-fill: #d0d4dc;
+    -fx-prompt-text-fill: #6b717d;
+}
+
 .filter-combo {
     -fx-background-color: #1e2227;
     -fx-border-color: #3e4451;
@@ -172,6 +183,28 @@
 
 .search-field, .filter-combo {
     -fx-pref-height: 34px; /* Menyamakan tinggi inputan dan combobox */
+}
+
+/* Dropdown popup untuk ComboBox di panel Edit User (search-field)
+   dan di dalam dialog (dialog-form) — tanpa ini, teks abu-abu terang
+   ikut "menurun" (inherited) ke popup padahal latar popup tetap
+   putih bawaan, jadi kontrasnya nyaris hilang. */
+.search-field .list-cell,
+.dialog-form .combo-box .list-cell {
+    -fx-text-fill: #d0d4dc;
+    -fx-background-color: #1e2227;
+    -fx-padding: 4 8;
+}
+
+.search-field .combo-box-popup .list-view,
+.dialog-form .combo-box-popup .list-view {
+    -fx-background-color: #1e2227;
+    -fx-border-color: #3e4451;
+}
+
+.search-field .list-cell:hover,
+.dialog-form .combo-box .list-cell:hover {
+    -fx-background-color: #333944;
 }
 
 .toolbar-button {
@@ -634,9 +667,10 @@
     -fx-border-color: #74b8f5;
 }
 
-/* Memastikan outline/focus border bawaan JavaFX hilang */
+/* Memastikan area ketik TextArea tetap gelap (bukan transparent,
+   karena transparent bikin viewport putih bawaan JavaFX tembus keluar) */
 .dialog-form .text-area .content {
-    -fx-background-color: transparent;
+    -fx-background-color: #1e2227;
 }
 
 
@@ -809,4 +843,21 @@
 .field-value {
     -fx-font-size: 13px;
     -fx-text-fill: #d0d4dc;
+}
+
+.profile-email {
+    -fx-font-size: 11px;
+    -fx-text-fill: #8b929d;
+}
+
+.section-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d0d4dc;
+    -fx-letter-spacing: 1px;
+}
+
+.profile-divider .line {
+    -fx-border-color: #3e4451;
+    -fx-border-width: 1 0 0 0;
 }

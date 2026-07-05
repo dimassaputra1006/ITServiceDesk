@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -375,14 +376,25 @@ public class TicketController implements Initializable {
         ComboBox<String> priorityBox = new ComboBox<>();
         priorityBox.getItems().addAll("Critical", "High", "Medium", "Low");
         priorityBox.setValue("Medium");
-        TextField reporterField = new TextField();
-        reporterField.setPromptText("Reporter ID");
+        ComboBox<User> reporterBox = new ComboBox<>();
+        reporterBox.setPromptText("Select reporter");
+        reporterBox.setMaxWidth(Double.MAX_VALUE);
+        reporterBox.getItems().setAll(userDao.getAllUsers());
+        Callback<ListView<User>, ListCell<User>> reporterCellFactory = list -> new ListCell<>() {
+            @Override
+            protected void updateItem(User user, boolean empty) {
+                super.updateItem(user, empty);
+                setText(empty || user == null ? null : user.getFullName() + "  (" + user.getUsername() + ")");
+            }
+        };
+        reporterBox.setCellFactory(reporterCellFactory);
+        reporterBox.setButtonCell(reporterCellFactory.call(null));
 
         VBox form = new VBox(8,
                 new Label("Title"), titleField,
                 new Label("Description"), descArea,
                 new Label("Priority"), priorityBox,
-                new Label("Reporter ID"), reporterField
+                new Label("Reporter"), reporterBox
         );
         form.getStyleClass().add("dialog-form");
         dialog.getDialogPane().setContent(form);
@@ -395,12 +407,12 @@ public class TicketController implements Initializable {
             if (result == saveBtn) {
                 String title = titleField.getText() != null ? titleField.getText().trim() : "";
                 String desc = descArea.getText() != null ? descArea.getText().trim() : "";
-                String reporter = reporterField.getText() != null ? reporterField.getText().trim() : "";
-                if (title.isEmpty() || desc.isEmpty() || reporter.isEmpty()) {
-                    showAlert("Validation", "Title, Description, dan Reporter ID wajib diisi.");
+                User selectedReporter = reporterBox.getValue();
+                if (title.isEmpty() || desc.isEmpty() || selectedReporter == null) {
+                    showAlert("Validation", "Title, Description, dan Reporter wajib diisi.");
                     return;
                 }
-                Ticket ticket = new Ticket(title, desc, reporter, priorityBox.getValue());
+                Ticket ticket = new Ticket(title, desc, selectedReporter.getEmployeeId(), priorityBox.getValue());
                 String analystId = currentAnalyst != null ? currentAnalyst.getEmployeeId() : "SYSTEM";
                 if (ticketService.createTicket(ticket, analystId)) {
                     refreshAll();
