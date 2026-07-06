@@ -2,6 +2,7 @@ package com.itservicedesk.controller;
 
 import com.itservicedesk.dao.UserDao;
 import com.itservicedesk.model.User;
+import com.itservicedesk.util.AnalystSession;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class UserController implements Initializable {
@@ -53,6 +55,7 @@ public class UserController implements Initializable {
     // Detail Panel
     @FXML private Circle profileAvatar;
     @FXML private Label lblProfileName;
+    @FXML private Label lblAnalystName;
     @FXML private ComboBox<String> cbProfileRole;
     @FXML private ComboBox<String> cbProfileDept;
     @FXML private Label lblAccountStatus;
@@ -80,6 +83,7 @@ public class UserController implements Initializable {
         setupTable();
         setupSearch();
         setupSelectionListener();
+        setupAnalystSelector();
         loadUserData();
     }
 
@@ -93,6 +97,13 @@ public class UserController implements Initializable {
             String query = newVal == null ? "" : newVal.trim().toLowerCase();
             filteredUsers.setPredicate(user -> matchesSearch(user, query));
         });
+    }
+
+    private void setupAnalystSelector() {
+        AnalystSession.ensureSelected(userDao);
+        if (AnalystSession.isAnalystSelected()) {
+            lblAnalystName.setText("ANALYST: " + AnalystSession.getCurrentAnalystName().toUpperCase());
+        }
     }
 
     private boolean matchesSearch(User user, String query) {

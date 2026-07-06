@@ -20,11 +20,12 @@
                             <Button onAction="#handleDashboardNav" styleClass="nav-button" text="TICKET DASHBOARD" />
                             <Button styleClass="nav-button, nav-button-active" text="USER DIRECTORY" />
                         </HBox>
-                    </children>
+                        <Region HBox.hgrow="ALWAYS" />
                     <VBox alignment="CENTER_RIGHT" spacing="2">
                         <Label fx:id="lblAnalystName" styleClass="analyst-name" text="ANALYST: ---" />
                         <Label fx:id="lblShiftStatus" styleClass="analyst-status" text="STATUS: ON SHIFT" />
                     </VBox>
+                    </children>
                 </HBox>
 
                 <!-- Toolbar row — search + primary action, mirrors ticket dashboard's toolbar -->

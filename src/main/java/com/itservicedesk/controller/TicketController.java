@@ -38,12 +38,10 @@ public class TicketController implements Initializable {
     @FXML private Label lblQueueHint;
     @FXML private TextField txtSearch;
     @FXML private ComboBox<String> cbFilterPriority;
-    @FXML private ComboBox<User> cbAnalyst;
     @FXML private Button btnNewTicket;
     @FXML private Button btnRefresh;
     @FXML private VBox historyContainer;
     @FXML private VBox logContainer;
-    @FXML private ComboBox<String> navComboBox;
 
     private final TicketService ticketService = new TicketService();
     private final UserDao userDao = new UserDao();
@@ -66,15 +64,7 @@ public class TicketController implements Initializable {
     }
 
     private void setupAnalystSelector() {
-        // Only auto-pick an analyst the first time the app runs; if the
-        // session already has one (e.g. set while the User dashboard was
-        // open), keep using that instead of overwriting it.
-        if (!AnalystSession.isAnalystSelected()) {
-            List<User> analysts = userDao.getActiveItStaff();
-            User analyst = !analysts.isEmpty() ? analysts.get(0) : userDao.findByUsername("ahmad.fauzi");
-            AnalystSession.setCurrentAnalyst(analyst);
-        }
-
+        AnalystSession.ensureSelected(userDao);
         if (AnalystSession.isAnalystSelected()) {
             lblAnalystName.setText("ANALYST: " + AnalystSession.getCurrentAnalystName().toUpperCase());
         }
